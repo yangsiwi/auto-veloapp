@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+*.sqlite3
+
+# 虚拟环境
+.venv/
+env/
+ENV/
+
+# VSCode 工作区配置（如有）
+.vscode/
+
+# Allure 报告输出
+allure-results/
+allure-reports/
+
+# pytest 缓存
+.pytest_cache/
+
+# 单元测试生成的 HTML 或日志文件
+*.html
+*.xml
+*.db
+*.log
+
+# Mac 系统文件
+.DS_Store
+
+# 临时文件
+*.tmp
+*.bak
+*.swp
+
+# 其他
+.idea/

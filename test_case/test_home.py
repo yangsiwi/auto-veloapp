@@ -12,9 +12,13 @@ from page.LoginPage import LoginPage
 @allure.story("首页模块")
 class TestHome:
     data = load_yaml('./data/home.yaml')
+
     @pytest.mark.run(order=2)
-    @pytest.mark.parametrize("case_data", data)
+    @pytest.mark.parametrize("case_data", data, ids=[f"{case['case_id']}-{case['case_name']}" for case in data])
     def test_go_into_personal_info_page(self, login_driver, case_data):
+        # 动态的标题
+        allure.dynamic.title(f"{case_data['case_id']} - {case_data['case_name']}")
+
         # 强制等待 3 秒
         time.sleep(3)
 

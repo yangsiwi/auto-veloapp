@@ -6,7 +6,7 @@ from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 # function每次启动一次设备信息
 # session 一次设备信息打开用例全运行完在关闭
 def login_driver(request):
