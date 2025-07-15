@@ -1,5 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","11847","登录失败-用户名不存在","test_case","Tue Jul 15 12:08:35 CST 2025","passed","Tue Jul 15 12:08:47 CST 2025","TestCase","test_login","",""
-"","0","test_login[case_data1]","test_case","Tue Jul 15 12:08:50 CST 2025","broken","Tue Jul 15 12:08:50 CST 2025","TestCase","test_login","",""
-"","0","test_login[case_data2]","test_case","Tue Jul 15 12:08:54 CST 2025","broken","Tue Jul 15 12:08:54 CST 2025","TestCase","test_login","",""
-"","0","test_go_into_personal_info_page[case_data0]","test_case","Tue Jul 15 12:08:59 CST 2025","broken","Tue Jul 15 12:08:59 CST 2025","TestHome","test_home","",""
