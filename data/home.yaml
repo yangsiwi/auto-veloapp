@@ -1,0 +1,4 @@
+- case_id: 'home001'
+  case_name: '点击个人信息按钮进入到个人信息页面'
+  expected_result: 'Settings'
+
