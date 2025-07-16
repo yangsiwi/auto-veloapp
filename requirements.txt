@@ -1,0 +1,18 @@
+# 测试框架
+pytest==8.4.1
+pytest-ordering==0.6
+
+# Appium
+Appium-Python-Client==5.1.1
+selenium==4.34.2
+
+# 报告工具
+allure-pytest==2.14.3
+allure-python-commons==2.14.3
+allure-combine==1.0.11
+
+# 数据处理
+pyyaml==6.0.2
+pandas==2.3.1
+openpyxl==3.1.5
+

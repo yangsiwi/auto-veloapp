@@ -2,7 +2,7 @@ import time
 
 import allure
 
-from page.HomePage import HomePage
+from page.home_page import HomePage
 from page.riding_page import RidingPage
 
 

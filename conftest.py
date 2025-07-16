@@ -4,7 +4,7 @@ import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
-from page.LoginPage import LoginPage
+from page.login_page import LoginPage
 
 
 @pytest.fixture(scope='session')

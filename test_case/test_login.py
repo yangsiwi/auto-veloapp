@@ -1,7 +1,7 @@
 import allure
 import pytest
 from utils.load_yaml import load_yaml
-from page.LoginPage import LoginPage
+from page.login_page import LoginPage
 
 
 @allure.epic("velotric app应用")
