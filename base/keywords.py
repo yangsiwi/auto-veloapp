@@ -40,3 +40,6 @@ class Keywords:
         except Exception as e:
             print(f"清空失败: {e}")
 
+    @allure.step("长按元素 {duration} 秒")
+    def long_press_element(self, place, duration=3):
+        pass

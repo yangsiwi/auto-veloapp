@@ -1,37 +1,1 @@
-import time
-
-import allure
-import pytest
-from data.load_excel import pandas_read_excel_dict
-from data.load_yaml import load_yaml
-from page.HomePage import HomePage
-from page.LoginPage import LoginPage
-
-
-@allure.epic("velotric app应用")
-@allure.story("首页模块")
-class TestHome:
-    data = load_yaml('./data/home.yaml')
-
-    @pytest.mark.run(order=2)
-    @pytest.mark.parametrize("case_data", data, ids=[f"{case['case_id']}-{case['case_name']}" for case in data])
-    def test_go_into_personal_info_page(self, login_driver, case_data):
-        # 动态的标题
-        allure.dynamic.title(f"{case_data['case_id']} - {case_data['case_name']}")
-
-        # 强制等待 3 秒
-        time.sleep(3)
-
-        # 实例化 HomePage 对象
-        hp = HomePage(login_driver)
-
-        # 点击个人信息按钮
-        hp.click_personal_information_btn()
-
-        # 强制等待
-        time.sleep(3)
-
-        # 断言【判断进入到个人信息页面中是否有 "Settings" 文字】
-        actual_msg = hp.click_success_msg()
-        assert actual_msg == case_data[
-            "expected_result"], f"期望值: {case_data['expected_result']}, 实际值: {actual_msg}"
+import timeimport allureimport pytestfrom utils.load_yaml import load_yamlfrom page.BikeSettingsPage import BikeSettingsPagefrom page.HomePage import HomePagefrom page.InfoPage import InfoPage@allure.epic("velotric app应用")@allure.story("首页模块")class TestHome:    # 读取测试数据    data = load_yaml('./data/home.yaml')    userinfo_data = data['userinfo_data']    bike_settings_data = data['bike_settings_data']    @pytest.mark.run(order=2)    @pytest.mark.parametrize("case_data", userinfo_data,                             ids=[f"{case['case_name']}" for case in userinfo_data])    def test_click_userinfo(self, login_driver, case_data):        # 动态的标题        allure.dynamic.title(f"{case_data['case_name']}")        # 强制等待 3 秒        time.sleep(3)        # 实例化 HomePage、InfoPage 对象        hp = HomePage(login_driver)        info = InfoPage(login_driver)        # 在首页点击"个人信息"按钮        hp.click_userinfo()        # 进入到个人信息页面后强制等待 5 秒        time.sleep(5)        # 断言【判断进入到个人信息页面中是否有 "Settings" 文字】        actual_msg = hp.get_settings_text()        assert actual_msg == case_data[            "expected_result"], f"期望值: {case_data['expected_result']}, 实际值: {actual_msg}"        # 断言完成后，在个人信息页面点击返回按钮回到主页        info.click_back_btn()    @pytest.mark.run(order=3)    @pytest.mark.parametrize(        "case_data",        bike_settings_data,        ids=[f"{case['case_name']}" for case in bike_settings_data]    )    def test_click_bike_settings(self, login_driver, case_data):        # 动态的标题        allure.dynamic.title(f"{case_data['case_name']}")        # 实例化 HomePage、BikeSettingsPage 对象        hp = HomePage(login_driver)        bsp = BikeSettingsPage(login_driver)        # 在首页点击"车辆设置"按钮        hp.click_bike_settings()        # 进入到车辆设置页面后强制等待 5 秒        time.sleep(5)        # 断言【判断进入到车辆设置页面中是否有 "BIKE SETTINGS" 文字】        actual_msg = hp.get_bike_settings_content_text()        assert actual_msg == case_data["expected_result"], \            f"期望值: {case_data['expected_result']}, 实际值: {actual_msg}"        # 断言完成后，在车辆设置页面点击返回按钮回到首页        bsp.click_back_btn()

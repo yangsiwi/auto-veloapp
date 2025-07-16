@@ -8,7 +8,7 @@ args = [
     '--capture=sys',  # 会在allure报告中展示 stdout 的小文本
     '--clean-alluredir',  # 清空数据每次获得的是最新的数据
     '--alluredir=allure-results',  # 生成测试数据，数据放在allure-results文件夹里面
-    # r'/Users/wayne/Documents/work/auto-veloapp/test_case/test_login.py'
+    # r'/Users/wayne/Documents/work/auto-veloapp/test_case/zzztest_riding.py'
 ]
 
 pytest.main(args)

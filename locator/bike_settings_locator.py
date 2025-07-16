@@ -1,5 +1,12 @@
 from appium.webdriver.common.appiumby import AppiumBy
 
+
+# BIKE SETTINGS 文案
+BIKE_SETTINGS_TEXT = (AppiumBy.XPATH, '//android.view.View[@content-desc="BIKE SETTINGS"]')
+
+# 返回按钮
+back_btn = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.View").instance(4)')
+
 # Eco Mode
 eco_mode_btn = (AppiumBy.ID,
                 '//android.widget.ImageView[@content-desc="Eco Mode\nExtends battery life, providing optimal efficiency for longer rides."')

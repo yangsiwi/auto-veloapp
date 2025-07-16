@@ -1,4 +1,11 @@
-- case_id: 'home001'
-  case_name: '点击个人信息按钮进入到个人信息页面'
-  expected_result: 'Settings'
+# 个人信息测试数据
+userinfo_data:
+  - case_id: 'home001'
+    case_name: '点击个人信息按钮进入到个人信息页面'
+    expected_result: 'Settings'
 
+# 车辆设置测试数据
+bike_settings_data:
+  - case_id: 'home002'
+    case_name: '点击车辆设置按钮进入到车辆设置页面'
+    expected_result: 'BIKE SETTINGS'

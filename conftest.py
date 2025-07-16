@@ -4,6 +4,7 @@ import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
+from page.LoginPage import LoginPage
 
 
 @pytest.fixture(scope='session')
@@ -35,6 +36,13 @@ def login_driver(request):
         driver.press_keycode(3)  # 模拟按下手机的HOME键  退出当前的应用
 
     request.addfinalizer(end)  # 即使测试的时候抛出了异常也会执行退出清理的操作
+
+
+@pytest.fixture()
+def login(login_driver):
+    driver = login_driver
+    l = LoginPage(driver)
+    l.login("yangsw077@gmail.com", "Yang123456")
 
 
 # 普通函数用函数 调用 函数名() 能拿到返回值

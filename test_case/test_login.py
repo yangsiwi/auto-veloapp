@@ -1,24 +1,23 @@
 import allure
 import pytest
-from data.load_excel import pandas_read_excel_dict
-from data.load_yaml import load_yaml
+from utils.load_yaml import load_yaml
 from page.LoginPage import LoginPage
 
 
 @allure.epic("velotric app应用")
 @allure.story("登录模块")
-class TestCase:
-    # 我们的数据在excel中  [{}]的所有excel数据
-    # data = pandas_read_excel_dict("./data/velotric.xlsx", 'Sheet1')
-    data = load_yaml('./data/login.yaml')
-    print("所有的测试数据", data)
+class TestLogin:
+    # 读取测试数据
+    test_data = load_yaml('./data/login.yaml')
 
     @pytest.mark.run(order=1)
-    @pytest.mark.parametrize("case_data", data)
+    @pytest.mark.parametrize("case_data", test_data, ids=[f"{case['case_name']}" for case in test_data])
     def test_login(self, login_driver, case_data):
+
         # 动态的标题
-        allure.dynamic.title(f"{case_data['case_id']}")
-        # 实例化登录页 传个设备信息 conftest里面传
+        allure.dynamic.title(f"{case_data['case_name']}")
+
+        # 实例化登录页
         l = LoginPage(login_driver)
 
         # 获取参数（兼容 Excel 和 YAML 两种数据源）
