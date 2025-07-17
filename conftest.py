@@ -1,4 +1,3 @@
-import time
 import allure
 import pytest
 from appium import webdriver
@@ -10,7 +9,6 @@ from utils.load_yaml import load_yaml
 
 @pytest.fixture(scope='session')
 def get_driver_options():
-
     options = UiAutomator2Options()
     options.platform_name = "Android"
     options.platform_version = "14"
@@ -30,9 +28,6 @@ def app_setup(request, get_driver_options):
     # 从 get_driver_options 获取配置
     driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
 
-    # 强制等待
-    time.sleep(2)
-
     # 统一在这里点击初始的 "Sign in" 按钮，进入账号密码登录页
     # 这样无论是登录测试还是其他模块测试，起点都是一致的
     # 点击 Sign 按钮
@@ -45,7 +40,6 @@ def app_setup(request, get_driver_options):
     yield driver
 
     # 测试结束后执行清理操作，使用 quit() 来彻底关闭会话
-    time.sleep(2)
     driver.quit()
 
 
@@ -77,7 +71,7 @@ def logged_in_driver(app_setup):
 
     # 验证一下是否真的登录成功，确保后续测试的可靠性
     try:
-        login_page.success_msg()  # 这个方法内部有等待，可以判断是否进入主页
+        login_page.get_success_message()  # 这个方法内部有等待，可以判断是否进入主页
         allure.step("前置登录成功，已进入应用主页。")
     except Exception:
         # 如果登录失败，保存截图并中断测试
