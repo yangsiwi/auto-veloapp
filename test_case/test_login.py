@@ -5,20 +5,20 @@ from page.login_page import LoginPage
 
 
 @allure.epic("velotric app应用")
-@allure.story("登录模块")
+@allure.feature("登录模块")
 class TestLogin:
     # 读取测试数据
     test_data = load_yaml('./data/login.yaml')
 
     @pytest.mark.run(order=1)
     @pytest.mark.parametrize("case_data", test_data, ids=[f"{case['case_name']}" for case in test_data])
-    def test_login(self, login_driver, case_data):
+    def test_login(self, app_setup, case_data):
 
         # 动态的标题
         allure.dynamic.title(f"{case_data['case_name']}")
 
         # 实例化登录页
-        l = LoginPage(login_driver)
+        l = LoginPage(app_setup)
 
         # 获取参数（兼容 Excel 和 YAML 两种数据源）
         all_params = case_data['all_params']

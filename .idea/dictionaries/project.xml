@@ -2,7 +2,12 @@
   <dictionary name="project">
     <words>
       <w>alluredir</w>
+      <w>call'</w>
+      <w>funcargs</w>
+      <w>hookwrapper</w>
+      <w>makereport</w>
       <w>mddoscar</w>
+      <w>tryfirst</w>
     </words>
   </dictionary>
 </component>
