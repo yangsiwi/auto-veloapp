@@ -9,3 +9,5 @@ SETTINGS_TEXT = (AppiumBy.XPATH, '//android.view.View[@content-desc="Settings"]'
 # 返回按钮
 back_btn = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.View").instance(4)')
 
+# About Velotric 按钮
+about_velotric_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="About Velotric"]')

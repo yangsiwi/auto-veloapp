@@ -1,0 +1,215 @@
+太棒了！您的问题非常有深度，已经触及到了大型自动化测试项目性能优化的核心。
+
+答案是：是的，scope='session' 绝对是可行的，而且它能最大程度地节省时间。
+
+当您设置为 session 级别时：
+
+App启动和登录：只在所有测试开始前执行一次。
+App关闭：只在所有测试（无论多少个模块文件）全部结束后执行一次。
+
+这将带来巨大的性能提升。但是，正如您敏锐地意识到的，它对代码的要求也更高了。
+
+使用 scope='session' 需要注意什么？（核心挑战）
+挑战和 scope='module' 类似，但被放大了：您必须在更大的范围内管理好App的状态。
+
+模块间的状态传递：
+test_login.py 模块执行完毕后，App会停留在主页（因为最后一个用例是成功登录）。
+当 test_home.py 模块开始执行时，它接收到的 driver 就是一个已经位于主页的 driver。这恰好是我们想要的！
+
+但是，如果 test_login.py 因为某些原因执行失败了，或者最后一个用例不是成功登录，那么 test_home.py 就会在错误的页面开始，导致整个模块的用例全部失败。
+
+用例间的状态恢复（模块内部）：
+这和 module 级别的要求一样。
+每个模块（.py文件）内部的所有测试用例，都必须负责在自己执行完毕后，将App恢复到一个“模块级的初始状态”。
+
+对于 test_home.py，这个初始状态就是主页。您已经做得很好，每个用例最后都 click_back_btn() 返回了主页。
+对于 test_login.py，这个初始状态是登录页。您也通过“等待Toast消失 -> 返回 -> 重进登录页”的逻辑做到了这一点。
+
+对Fixture的依赖关系：
+所有依赖 logged_in_driver 或 app_setup 的测试用例，现在都会共享同一个 driver 实例。
+一个地方的意外状态改变，可能会影响到很后面的另一个测试。
+
+需要修改哪些代码？
+好消息是，基于我们之前的所有优化，您需要做的改动非常小。您的代码基础已经非常扎实了。
+
+第一步：修改 conftest.py (核心)
+这是唯一必须修改的文件。您只需要把 app_setup 和 logged_in_driver 的 scope 从 'module' 改为 'session'。
+
+修改后的 conftest.py:
+Generated python
+# ... (imports 和 get_driver_options 保持不变) ...
+
+# 【核心改动】将 scope 从 'module' 改为 'session'
+@pytest.fixture(scope='session')
+def app_setup(request, get_driver_options):
+    # setup 部分: 在整个测试会话开始时运行一次
+    print("\n[Session Setup] : 启动Appium Driver...")
+    driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
+
+    # 这一步也可以不做，让 logged_in_driver 来负责点击
+    # try:
+    #     driver.find_element(*sign_btn).click()
+    # except Exception as e:
+    #     pytest.fail(f"会话级启动失败: 无法点击 'Sign in' 按钮。错误: {e}")
+
+    # 使用 request.addfinalizer 来注册清理函数，这是 session 级别推荐的做法
+    def finalizer():
+        print("\n[Session Teardown] : 关闭Appium Driver。")
+        driver.quit()
+    request.addfinalizer(finalizer)
+
+    return driver # 直接返回 driver
+
+
+# 【核心改动】将 scope 从 'module' 改为 'session'
+@pytest.fixture(scope='session')
+def logged_in_driver(app_setup):
+    # setup 部分: 同样只在会话开始时运行一次
+    driver = app_setup
+
+    # 【优化建议】登录操作本身也应该只执行一次
+    # 我们可以通过添加一个标记来防止重复登录
+    if not getattr(driver, "is_logged_in", False):
+        print("\n[Session Setup] : 执行前置登录...")
+        login_page = LoginPage(driver)
+
+        # 点击 Sign In 按钮，从欢迎页进入登录页
+        try:
+            login_page.click_element(sign_btn)
+        except Exception as e:
+            pytest.fail(f"会话级登录失败: 无法点击 'Sign in' 按钮。错误: {e}")
+
+        # ... (登录逻辑保持不变)
+        all_test_data = load_yaml("data/login.yaml")
+        success_case_data = next((case for case in all_test_data if case.get("case_id") == "login003"), None)
+        if not success_case_data:
+            pytest.fail("在 login.yaml 中未找到 case_id 为 'login003' 的成功登录用例数据。")
+
+        params = success_case_data['all_params']
+        username = params['username']
+        password = params['password']
+
+        allure.step(f"执行会话级前置登录，用户: {username}")
+        login_page.login(username, password)
+
+        try:
+            login_page.get_success_message()
+            allure.step("会话级前置登录成功，已进入应用主页。")
+            # 给 driver 对象打上一个“已登录”的标记
+            driver.is_logged_in = True
+        except Exception:
+            allure.attach(driver.get_screenshot_as_png(), "会话级前置登录失败截图", allure.attachment_type.PNG)
+            pytest.fail(f"会话级前置登录失败，用户: {username}。测试无法继续。")
+
+    return driver
+Use code with caution.
+Python
+对 conftest.py 的改动解读：
+scope='session': 明确告诉Pytest这两个fixture的生命周期是整个测试会话。
+清理方式的优化 (app_setup): 在 session 级别的fixture中，使用 request.addfinalizer(callback_function) 是比 yield 更推荐的清理方式。它能确保在任何情况下（即使setup失败）都能尝试执行清理函数。
+防止重复登录 (logged_in_driver): 我增加了一个小技巧：if not getattr(driver, "is_logged_in", False):。
+getattr(driver, "is_logged_in", False): 尝试获取 driver 对象上一个名为 is_logged_in 的属性，如果不存在，就返回 False。
+当第一次调用 logged_in_driver 时，这个属性不存在，if 条件成立，执行登录。
+登录成功后，我们通过 driver.is_logged_in = True 给 driver 对象动态地添加上这个属性作为“标记”。
+当后续的模块（比如 test_home.py）也请求 logged_in_driver 时，if 条件不再成立，它会直接跳过登录步骤，返回那个已经登录好的 driver。这保证了登录只发生一次。
+app_setup 简化: 我把 app_setup 中的 click(sign_btn) 注释掉了，并将这个职责完全交给了 logged_in_driver。这让 app_setup 的职责更单一：只负责启动和关闭 driver。
+第二步：修改 test_login.py (这是关键的逻辑调整)
+当您使用 session 级别的 fixture 时，test_login.py 这个模块的性质就变了。它不再是整个测试流程的“前置条件”，而是一个普通的、测试登录功能的模块。而整个测试会话的前置登录，已经由 logged_in_driver 这个fixture完成了。
+这意味着，test_login.py 不应该再使用 session 级别的 app_setup 了，否则会产生冲突。它需要一个自己独立的、function 级别的 driver 来进行干净的登录测试。
+解决方案：为 test_login 创建一个专用的、function 作用域的fixture。
+在 conftest.py 中增加一个fixture:
+Generated python
+# conftest.py
+
+# ... (session级别的fixture保持不变) ...
+
+# 【新增】为登录测试模块专用的、函数级别的 fixture
+@pytest.fixture(scope='function')
+def login_test_driver(request, get_driver_options):
+    """
+    这个 fixture 只给 test_login.py 使用。
+    它每次都启动一个全新的App，并在测试后关闭。
+    """
+    print("\n[Function Setup for Login Test] : 启动独立的Driver...")
+    driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
+
+    try:
+        driver.find_element(*sign_btn).click()
+    except Exception as e:
+        pytest.fail(f"登录测试启动失败: 无法点击 'Sign in' 按钮。错误: {e}")
+
+    yield driver
+
+    print("[Function Teardown for Login Test] : 关闭独立的Driver。")
+    driver.quit()
+Use code with caution.
+Python
+然后，修改 test_login.py 来使用这个新的fixture:
+Generated python
+# test_login.py
+
+# ... (imports保持不变) ...
+@allure.feature("登录模块")
+class TestLogin:
+    # ...
+    @pytest.mark.parametrize(...)
+    # 【核心改动】使用专用的 login_test_driver，而不是 app_setup
+    def test_login(self, login_test_driver, case_data):
+
+        allure.dynamic.title(f"{case_data['case_name']}")
+
+        # 【核心改动】使用 login_test_driver
+        lp = LoginPage(login_test_driver)
+
+        # ... (登录和断言逻辑保持不变)
+        # ...
+
+        # 【重要】之前为了 module 级别写的状态重置逻辑，现在可以去掉了
+        # 因为每个用例都是一个全新的App，不再需要手动重置
+        # if case_data["case_id"] != 'login003':
+        #     ... (等待Toast消失和重置页面的逻辑可以移除)
+
+        # 但是，为了确保参数化用例之间不出错，保留它也是更稳妥的做法。
+        # 我们可以保留它，因为它对于成功的用例不会执行。
+        if case_data["case_id"] != 'login003':
+            # 1. 断言
+            actual_msg = lp.get_failed_message()
+            assert actual_msg == case_data["expected_result"], "断言失败"
+            # 2. 等待消失
+            from locator.login_locator import error_msg
+            lp.wait_for_element_to_be_invisible(error_msg)
+            # 注意：这里不再需要手动返回和重进了，因为下一个用例是新App。
+        else:
+            actual_msg = lp.get_success_message()
+            assert actual_msg == case_data["expected_result"], "断言失败"
+
+        allure.attach(...)
+```**`test_login.py` 的逻辑简化：** 因为 `login_test_driver` 是 `function` 级别的，每个参数化用例都会得到一个全新的App，所以理论上我们不再需要 `else` 块里那些等待Toast消失和重置页面的复杂逻辑了。但是保留“等待Toast消失”逻辑也是可以的，以确保截图时界面是干净的。
+
+#### **第三步：其他测试模块（如 `test_home.py`）**
+
+这些模块现在可以直接使用 `logged_in_driver`，无需任何改动。
+
+```python
+# test_home.py
+class TestHome:
+    # ...
+    # 直接使用 session 级别的 logged_in_driver
+    def test_click_userinfo(self, logged_in_driver, case_data):
+        # ... 您的代码完全不需要变动 ...
+        # 它拿到的就是一个已经登录好、停留在主页的driver
+Use code with caution.
+Python
+总结
+切换到 scope='session' 的完整步骤：
+修改 conftest.py:
+将 app_setup 和 logged_in_driver 的 scope 改为 'session'。
+优化 app_setup 的清理方式为 request.addfinalizer。
+为 logged_in_driver 添加只登录一次的逻辑。
+新增一个 function 作用域的 login_test_driver，专门给 test_login.py 使用。
+修改 test_login.py:
+将其所有测试用例的 fixture 依赖从 app_setup 改为 login_test_driver。
+可以酌情简化失败用例后的状态重置逻辑。
+其他所有业务模块 (test_home.py 等):
+无需任何修改。继续使用 logged_in_driver 即可。
+这样，您就拥有了一个超高效的测试框架：它会先通过 logged_in_driver 完成一次性的登录，然后快速地执行所有需要登录状态的业务模块测试；同时，它也能通过 login_test_driver 独立、干净地测试登录功能本身，两者互不干扰。

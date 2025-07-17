@@ -32,6 +32,26 @@ class Keywords:
                           allure.attachment_type.PNG)
             raise TimeoutException(f"等待元素 {locator} 可见超时")
 
+    # 【新增】等待元素在页面上消失的方法
+    @allure.step("等待元素消失")
+    def wait_for_element_to_be_invisible(self, locator, timeout=10):
+        """
+        在指定时间内等待，直到元素从DOM中移除或变为不可见。
+        如果元素本来就不存在，此方法会立刻返回True。
+        如果元素在超时后依然可见，则抛出TimeoutException。
+        """
+        try:
+            WebDriverWait(self.driver, timeout, self.poll_frequency).until(
+                EC.invisibility_of_element_located(locator)
+            )
+            return True
+        except TimeoutException:
+            # 如果等待超时，说明Toast一直没消失，这是一个问题
+            allure.attach(self.driver.get_screenshot_as_png(), f"等待元素 {locator} 消失超时",
+                          allure.attachment_type.PNG)
+            print(f"警告：等待元素 {locator} 消失超时！")
+            return False
+
     @allure.step("等待元素可被点击")
     def wait_for_element_to_be_clickable(self, locator):
         """

@@ -1,0 +1,8 @@
+# 个人信息测试数据
+  - case_id: 'info001'
+    case_name: '点击 About Velotric 进入到 About Velotric 页'
+    expected_result: 'ABOUT VELOTRIC'
+#
+#  - case_id: 'info002'
+#    case_name: '点击'
+#    expected_result: 'BIKE SETTINGS'

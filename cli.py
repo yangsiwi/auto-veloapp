@@ -99,7 +99,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--marker', type=str, help='运行带有特定标记的测试用例。')
 
     # 添加 --path 参数，用于指定要运行的测试文件或目录
-    parser.add_argument('--path', type=str, default='.', help='指定要运行的测试文件或目录，默认为当前目录。')
+    parser.add_argument('--path', nargs='+', default=['test_case/'], type=str,
+                        help='指定要运行的测试文件或目录，默认为当前目录。')
 
     """
     调用 parser.parse_args()，它会去检查真正的命令行输入，并把解析到的值存入一个类似字典的对象 args 中。
@@ -125,9 +126,9 @@ if __name__ == "__main__":
 
     # 将测试路径作为最后一个参数
     """
-    把 --path 参数的值（无论是用户提供的还是默认的 .）追加到列表末尾。Pytest会把它当作要执行的测试路径。
+    把 --path 对应的列表（例如 ['path1', 'path2']）中的每一个元素都添加到 extra_pytest_args 列表的末尾。
     """
-    extra_pytest_args.append(args.path)
+    extra_pytest_args.extend(args.path)
 
     # 运行测试
     """
@@ -148,4 +149,6 @@ python cli.py -k userinfo
 
 4.假设你给某些用例加了标记 @pytest.mark.smoke，可以这样运行：
 python cli.py -m smoke
+
+python cli.py --path test_case/test_login.py test_case/test_home.py
 """

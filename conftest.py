@@ -1,3 +1,5 @@
+import time
+
 import allure
 import pytest
 from appium import webdriver
@@ -21,65 +23,81 @@ def get_driver_options():
     return options
 
 
-@pytest.fixture(scope='function')
-# function每次启动一次设备信息
-# session 一次设备信息打开用例全运行完在关闭
+@pytest.fixture(scope='session')
 def app_setup(request, get_driver_options):
+    # setup 部分: 在整个测试会话开始时运行一次
+    print("\n[Session Setup] : 启动Appium Driver...")
+
     # 从 get_driver_options 获取配置
     driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
 
-    # 统一在这里点击初始的 "Sign in" 按钮，进入账号密码登录页
-    # 这样无论是登录测试还是其他模块测试，起点都是一致的
-    # 点击 Sign 按钮
+    # 使用 request.addfinalizer 来注册清理函数，这是 session 级别推荐的做法
+    def finalizer():
+        print("\n[Session Teardown] : 关闭Appium Driver。")
+        driver.quit()
+
+    request.addfinalizer(finalizer)
+    return driver  # 直接返回 driver
+
+
+@pytest.fixture(scope='session')
+def logged_in_driver(app_setup):
+    driver = app_setup
+    if not getattr(driver, "is_logged_in", False):
+        print("\n[Session Setup] : 执行前置登录...")
+        login_page = LoginPage(driver)
+
+        # 等待app启动稳定
+        time.sleep(3)
+
+        try:
+            login_page.click_element(sign_btn)
+        except Exception as e:
+            pytest.fail(f"会话级登录失败: 无法点击 'Sign in' 按钮。错误: {e}")
+
+        all_test_data = load_yaml("data/login.yaml")
+        success_case_data = next((case for case in all_test_data if case.get("case_id") == "login003"), None)
+
+        # 【修正】修复缩进，这个if块应该独立
+        if not success_case_data:
+            pytest.fail("在 login.yaml 中未找到 case_id 为 'login003' 的成功登录用例数据。")
+
+        # 【修正】这部分代码应该在 if 之外，确保总能被执行
+        params = success_case_data['all_params']
+        username = params['username']
+        password = params['password']
+
+        allure.step(f"执行会话级前置登录，用户: {username}")
+        login_page.login(username, password)
+
+        try:
+            login_page.get_success_message()
+            allure.step("会话级前置登录成功，已进入应用主页。")
+            driver.is_logged_in = True
+        except Exception:
+            allure.attach(driver.get_screenshot_as_png(), "会话级前置登录失败截图", allure.attachment_type.PNG)
+            pytest.fail(f"会話级前置登录失败，用户: {username}。测试无法继续。")
+
+    return driver
+
+# 为登录测试模块专用的、函数级别的 fixture
+@pytest.fixture(scope='function')
+def login_test_driver(request, get_driver_options):
+    print("\n[Function Setup for Login Test] : 启动独立的Driver...")
+    driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
+
+    # 等待app启动稳定
+    time.sleep(3)
+
     try:
         driver.find_element(*sign_btn).click()
     except Exception as e:
-        pytest.fail(f"无法在启动页找到并点击 'Sign in' 按钮。请检查应用初始状态。错误: {e}")
+        pytest.fail(f"登录测试启动失败: 无法点击 'Sign in' 按钮。错误: {e}")
 
-    # 使用 yield 将 driver 交付给测试用例
     yield driver
 
-    # 测试结束后执行清理操作，使用 quit() 来彻底关闭会话
+    print("\n[Function Teardown for Login Test] : 关闭独立的Driver。")
     driver.quit()
-
-
-@pytest.fixture(scope='function')
-def logged_in_driver(app_setup):
-    """
-    提供一个已经成功登录的driver的fixture。
-    它依赖于 app_setup 来获取初始化的driver，
-    然后执行登录，最后将已登录的 driver 提供给测试用例
-    """
-    driver = app_setup
-    login_page = LoginPage(driver)
-
-    # 动态加载登录成功的测试数据
-    all_test_data = load_yaml("data/login.yaml")
-
-    success_case_data = next((case for case in all_test_data if case.get("case_id") == "login003"), None)
-    if not success_case_data:
-        pytest.fail("在 login.yaml 中未找到 case_id 为 'login003' 的成功登录用例数据。")
-
-        # 获取用户名和密码
-    params = success_case_data['all_params']
-    username = params['username']
-    password = params['password']
-
-    # 调用 LoginPage 的登录方法
-    allure.step(f"执行前置登录，用户: {username}")
-    login_page.login(username, password)
-
-    # 验证一下是否真的登录成功，确保后续测试的可靠性
-    try:
-        login_page.get_success_message()  # 这个方法内部有等待，可以判断是否进入主页
-        allure.step("前置登录成功，已进入应用主页。")
-    except Exception:
-        # 如果登录失败，保存截图并中断测试
-        allure.attach(driver.get_screenshot_as_png(), "前置登录失败截图", allure.attachment_type.PNG)
-        pytest.fail(f"前置登录失败，用户: {username}。请检查凭证或应用状态。")
-
-    # 将已经登录成功的 driver 交付给测试用例
-    yield driver
 
 
 # 钩子函数 作用：在测试用例执行后（无论成功/失败）自动截图添加到allure报告中
