@@ -16,17 +16,17 @@ def load_yaml(filename):
 # 规范的写法是在main里面测试一下
 if __name__ == '__main__':
     test_case = load_yaml("../data/info.yaml")
-    print(test_case['my_rides_data'])
-    print(test_case['account_data'])
-    print(test_case['about_velotric_data'])
+    # print(test_case['my_rides_data'])
+    # print(test_case['account_data'])
+    # print(test_case['about_velotric_data'])
 
-    print("--------------")
+    # print("--------------")
+    #
+    # all_subpage_data= (
+    #     test_case['my_rides_data'] +
+    #     test_case['account_data'] +
+    #     test_case['about_velotric_data']
+    # )
 
-    all_subpage_data= (
-        test_case['my_rides_data'] +
-        test_case['account_data'] +
-        test_case['about_velotric_data']
-    )
-
-    print(all_subpage_data)
+    # print(all_subpage_data)
     print(test_case)

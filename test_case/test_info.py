@@ -14,14 +14,14 @@ from page.info_page import InfoPage
 @allure.story("个人信息模块")
 class TestInfo:
     # 1.加载所有数据
-    test_data = load_yaml('./data/info.yaml')
+    all_subpage_data = load_yaml('./data/info.yaml')
 
     # 2.将所有场景的数据合并到一个列表中，用于参数化
-    all_subpage_data = (
-            test_data['my_rides_data'] +
-            test_data['account_data'] +
-            test_data['about_velotric_data']
-    )
+    # all_subpage_data = (
+    #         test_data['my_rides_data'] +
+    #         test_data['account_data'] +
+    #         test_data['about_velotric_data']
+    # )
 
     # 3.创建一个 Page Object 的映射字典
     # 键是 YAML 中的字符串，值是真正的页面类

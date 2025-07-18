@@ -13,27 +13,49 @@
 #    expected_result: 'ABOUT VELOTRIC'
 
 
-# 【新】将数据按子页面分组，更清晰
-my_rides_data:
-  - case_id: 'info001'
-    case_name: '点击 My Rides 进入到子页面'
-    page_object_name: 'MyRidesPage'  # 目标页面的类名
-    click_method: 'click_my_rides'    # 在InfoPage上要调用的点击方法名
-    verify_method: 'get_my_rides_text' # 在目标页面上要调用的验证方法名
-    expected_result: 'MY RIDES'
+## 【新】将数据按子页面分组，更清晰
+#my_rides_data:
+#  - case_id: 'info001'
+#    case_name: '点击 My Rides 进入到子页面'
+#    page_object_name: 'MyRidesPage'  # 目标页面的类名
+#    click_method: 'click_my_rides'    # 在InfoPage上要调用的点击方法名
+#    verify_method: 'get_my_rides_text' # 在目标页面上要调用的验证方法名
+#    expected_result: 'MY RIDES'
+#
+#account_data:
+#  - case_id: 'info002'
+#    case_name: '点击 Account 进入到子页面'
+#    page_object_name: 'AccountPage'
+#    click_method: 'click_account'
+#    verify_method: 'get_account_text'
+#    expected_result: 'ACCOUNT'
+#
+#about_velotric_data:
+#  - case_id: 'info003'
+#    case_name: '点击 About Velotric 进入到子页面'
+#    page_object_name: 'AboutPage'
+#    click_method: 'click_about_velotric'
+#    verify_method: 'get_about_velotric_text'
+#    expected_result: 'ABOUT VELOTRIC'
 
-account_data:
-  - case_id: 'info002'
-    case_name: '点击 Account 进入到子页面'
-    page_object_name: 'AccountPage'
-    click_method: 'click_account'
-    verify_method: 'get_account_text'
-    expected_result: 'ACCOUNT'
+# 直接就是一个测试用例的列表，不再需要外层的分组键
+- case_id: 'info001'
+  case_name: '点击 My Rides 进入到子页面'
+  page_object_name: 'MyRidesPage'
+  click_method: 'click_my_rides'
+  verify_method: 'get_my_rides_text'
+  expected_result: 'MY RIDES'
 
-about_velotric_data:
-  - case_id: 'info003'
-    case_name: '点击 About Velotric 进入到子页面'
-    page_object_name: 'AboutPage'
-    click_method: 'click_about_velotric'
-    verify_method: 'get_about_velotric_text'
-    expected_result: 'ABOUT VELOTRIC'
+- case_id: 'info002'
+  case_name: '点击 Account 进入到子页面'
+  page_object_name: 'AccountPage'
+  click_method: 'click_account'
+  verify_method: 'get_account_text'
+  expected_result: 'ACCOUNT'
+
+- case_id: 'info003'
+  case_name: '点击 About Velotric 进入到子页面'
+  page_object_name: 'AboutPage'
+  click_method: 'click_about_velotric'
+  verify_method: 'get_about_velotric_text'
+  expected_result: 'ABOUT VELOTRIC'
