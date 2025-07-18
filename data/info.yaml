@@ -1,8 +1,13 @@
 # 个人信息测试数据
+my_rides_data:
   - case_id: 'info001'
+    case_name: '点击 MY_RIDES 进入到 MY_RIDES 页'
+    expected_result: 'MY RIDES'
+account_data:
+  - case_id: 'info002'
+    case_name: '点击 Account 进入到 Account 页'
+    expected_result: 'ACCOUNT'
+about_velotric_data:
+  - case_id: 'info003'
     case_name: '点击 About Velotric 进入到 About Velotric 页'
     expected_result: 'ABOUT VELOTRIC'
-#
-#  - case_id: 'info002'
-#    case_name: '点击'
-#    expected_result: 'BIKE SETTINGS'

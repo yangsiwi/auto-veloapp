@@ -1,5 +1,4 @@
 import time
-
 import allure
 import pytest
 from appium import webdriver
@@ -79,6 +78,7 @@ def logged_in_driver(app_setup):
             pytest.fail(f"会話级前置登录失败，用户: {username}。测试无法继续。")
 
     return driver
+
 
 # 为登录测试模块专用的、函数级别的 fixture
 @pytest.fixture(scope='function')

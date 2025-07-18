@@ -15,5 +15,7 @@ def load_yaml(filename):
 
 # 规范的写法是在main里面测试一下
 if __name__ == '__main__':
-    data = load_yaml("../data/home.yaml")
+    data = load_yaml("../data/info.yaml")
     print(data)
+
+    print(data[0]['case_name'])
