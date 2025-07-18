@@ -4,6 +4,8 @@ import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
+from page.home_page import HomePage
+from page.info_page import InfoPage
 from page.login_page import LoginPage
 from utils.load_yaml import load_yaml
 
@@ -99,6 +101,22 @@ def login_test_driver(request, get_driver_options):
     print("\n[Function Teardown for Login Test] : 关闭独立的Driver。")
     driver.quit()
 
+@pytest.fixture(scope='module')
+def info_page_setup(logged_in_driver):
+    """
+    一个专门为个人信息模块测试准备的 fixture。
+    它会确保测试开始时，App已经位于个人信息页面。
+    """
+    print("\n[Module Setup for Info Test] : 导航到个人信息页...")
+    hp = HomePage(logged_in_driver)
+    hp.click_userinfo()
+
+    # 将 driver 和 InfoPage 实例一同传递给测试用例
+    yield logged_in_driver, InfoPage(logged_in_driver)
+
+    # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+    print("\n[Module Teardown for Info Test] : 从个人信息页返回主页。")
+    InfoPage(logged_in_driver).click_back_btn()
 
 # 钩子函数 作用：在测试用例执行后（无论成功/失败）自动截图添加到allure报告中
 # tryfirst 确保钩子优先执行
