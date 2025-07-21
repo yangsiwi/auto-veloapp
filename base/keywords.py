@@ -138,6 +138,43 @@ class Keywords:
         if self.driver.is_keyboard_shown:
             self.driver.hide_keyboard()
 
+
+    # --- 新增：页面滚动方法 ---
+    def _get_screen_size(self):
+        """
+        获取当前屏幕的尺寸。
+        """
+        return self.driver.get_window_size()
+
+    @allure.step("页面滚动到底部")
+    def scroll_to_bottom(self, duration_ms=1000):
+        """
+        从屏幕的底部中心向上滑动一小段距离，模拟滚动到底部的效果。
+        可以多次调用以滚动更多内容。
+        """
+        size = self._get_screen_size()
+        width = size["width"]
+        height = size["height"]
+
+        # 定义滚动的起点和终点
+        # 从屏幕的 80% 的位置，滑动到 20% 高度的位置
+        start_x = width // 2
+        start_y = int(height * 0.8)
+        end_y = int(height * 0.2)
+
+        # 使用 W3C Actions 来执行滚动
+        finger = PointerInput("touch", "finger")
+        actions = ActionChains(self.driver)
+
+        actions.move_to_location(start_x, start_y)
+        actions.pointer_down(button=PointerInput.MOUSE_BUTTON_LEFT)
+        # 将滑动拆分为多个小步骤，模拟更平滑的滚动
+        actions.pause(0.1)
+        actions.move_to_location(start_x, end_y, duration=duration_ms)
+        actions.pointer_up(button=PointerInput.MOUSE_BUTTON_LEFT)
+        actions.perform()
+        allure.attach(f"执行向上滑动: 从 ({start_x}, {start_y}) 到 ({start_x}, {end_y})", name="滚动日志")
+
     # @allure.step("清空输入框")
     # def clear_input(self, place):
     #     try:

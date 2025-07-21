@@ -1,0 +1,16 @@
+- case_id: 'about001'
+  case_name: '点击 Terms of Use 进入到子页面'
+  test_type: 'navigation'  # <--- 新增的类型字段
+  start_page_object_name: 'AboutPage' # <--- 新增：指明从哪个页面开始
+  page_object_name: 'TermsOfUsePage'
+  click_method: 'click_terms_of_use'
+  verify_method: 'get_terms_of_use_text'
+  expected_result: 'TERMS OF USE'
+- case_id: 'about002'
+  case_name: '点击 Privacy Policy 进入到子页面'
+  test_type: 'navigation'  # <--- 新增的类型字段
+  start_page_object_name: 'AboutPage' # <--- 新增：指明从哪个页面开始
+  page_object_name: 'PrivacyPolicyPage'
+  click_method: 'click_privacy_policy'
+  verify_method: 'get_privacy_policy_text'
+  expected_result: 'PRIVACY POLICY'
