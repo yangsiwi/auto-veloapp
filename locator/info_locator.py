@@ -16,5 +16,11 @@ SETTINGS_TEXT = (AppiumBy.XPATH, '//android.view.View[@content-desc="Settings"]'
 # 'Account' 按钮
 account_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Account"]')
 
+# 'Data Synchronization' 按钮
+data_synchronization_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Data Synchronization"]')
+
 # 'About Velotric' 按钮
 about_velotric_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="About Velotric"]')
+
+# 'Help' 按钮
+help_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Help"]')

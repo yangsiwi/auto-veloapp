@@ -2,7 +2,7 @@ import allure
 from base.keywords import Keywords
 from locator.login_locator import *
 
-
+# 登录页
 class LoginPage(Keywords):
 
     # 登录的功能方法

@@ -4,7 +4,7 @@ from locator.about_velotric_locator import *
 from locator.info_locator import *
 
 
-# 个人信息页
+# 关于 Velotric 页
 class AboutPage(Keywords):
 
     @allure.step("点击返回按钮")

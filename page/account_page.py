@@ -5,7 +5,7 @@ from locator.account_locator import *
 from locator.info_locator import *
 
 
-# 个人信息页
+# 账户页
 class AccountPage(Keywords):
 
     @allure.step("点击返回按钮")

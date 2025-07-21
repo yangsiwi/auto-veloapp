@@ -4,7 +4,7 @@ from locator.info_locator import *
 from locator.my_rides_locator import *
 
 
-# 个人信息页
+# 我的骑行页
 class MyRidesPage(Keywords):
 
     @allure.step("点击返回按钮")

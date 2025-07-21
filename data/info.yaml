@@ -59,3 +59,17 @@
   click_method: 'click_about_velotric'
   verify_method: 'get_about_velotric_text'
   expected_result: 'ABOUT VELOTRIC'
+
+- case_id: 'info004'
+  case_name: '点击 Data Synchronization 进入到子页面'
+  page_object_name: 'DataSyncPage'
+  click_method: 'click_data_synchronization'
+  verify_method: 'get_data_synchronization_text'
+  expected_result: 'DATA SYNCHRONIZATION'
+
+- case_id: 'info005'
+  case_name: '点击 Help 进入到子页面'
+  page_object_name: 'HelpPage'
+  click_method: 'click_help'
+  verify_method: 'get_help_text'
+  expected_result: 'HELP'

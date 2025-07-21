@@ -2,36 +2,31 @@ import allure
 import pytest
 
 from conftest import info_page_setup
+from page.help_page import HelpPage
+from utils.load_yaml import load_yaml
 from page.about_page import AboutPage
 from page.account_page import AccountPage
 from page.my_rides_page import MyRidesPage
-from utils.load_yaml import load_yaml
-from page.home_page import HomePage
-from page.info_page import InfoPage
+from page.data_sync_page import DataSyncPage
 
 
 @allure.epic("velotric app应用")
 @allure.story("个人信息模块")
 class TestInfo:
-    # 1.加载所有数据
+    # 加载所有数据
     all_subpage_data = load_yaml('./data/info.yaml')
 
-    # 2.将所有场景的数据合并到一个列表中，用于参数化
-    # all_subpage_data = (
-    #         test_data['my_rides_data'] +
-    #         test_data['account_data'] +
-    #         test_data['about_velotric_data']
-    # )
-
-    # 3.创建一个 Page Object 的映射字典
+    # 创建一个 Page Object 的映射字典
     # 键是 YAML 中的字符串，值是真正的页面类
     PAGE_OBJECTS = {
         'MyRidesPage': MyRidesPage,
         'AccountPage': AccountPage,
-        'AboutPage': AboutPage
+        'AboutPage': AboutPage,
+        'DataSyncPage': DataSyncPage,
+        'HelpPage': HelpPage
     }
 
-    # 4.使用合并后的数据进行参数化
+    # 使用合并后的数据进行参数化
     @pytest.mark.parametrize("case", all_subpage_data, ids=[f"{case['case_name']}" for case in all_subpage_data])
     def test_subpage_navigation(self, info_page_setup, case):
         """
@@ -39,17 +34,16 @@ class TestInfo:
         """
         allure.dynamic.title(case['case_name'])
 
-        # --- Setup ---
         # 从 fixture 直接解包获取 driver 和已经实例化好的 ip 对象
         driver, ip = info_page_setup
 
-        # 从YAML获取需要实例化的页面类名，并通过字典找到对应的类
+        # 从 YAML 获取需要实例化的页面类名，并通过字典找到对应的类
         NextPageClass = self.PAGE_OBJECTS[case['page_object_name']]
         # 实例化目标页面对象
         next_page = NextPageClass(driver)
 
-        with allure.step(f"{case['case_name']}的目标链接"):
-            # 【核心】使用getattr 动态调用 InfoPage上面的点击方法
+        with allure.step(f"{case['case_name']}"):
+            # 【核心】使用 getattr 动态调用 InfoPage 上面的点击方法
             info_page_click_method = getattr(ip, case['click_method'])
             info_page_click_method()
 
@@ -60,9 +54,8 @@ class TestInfo:
             assert actual_msg == case['expected_result'], f"期望值: {case['expected_result']}, 实际值: {actual_msg}"
 
         with allure.step("逐层返回，恢复App到主页状态"):
-            # 【核心】next_page是动态的，但是back_btn方法是所有子页面共有的
+            # 【核心】next_page 是动态的，但是 back_btn 方法是所有子页面共有的
             next_page.click_back_btn()
-
 
 # # 读取测试数据
 # test_data = load_yaml('./data/info.yaml')

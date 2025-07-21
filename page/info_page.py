@@ -21,3 +21,11 @@ class InfoPage(Keywords):
     @allure.step("点击 'About Velotric' 按钮")
     def click_about_velotric(self):
         self.click_element(about_velotric_btn)
+
+    @allure.step("点击 'Data Synchronization' 按钮")
+    def click_data_synchronization(self):
+        self.click_element(data_synchronization_btn)
+
+    @allure.step("点击 'Help' 按钮")
+    def click_help(self):
+        self.click_element(help_btn)

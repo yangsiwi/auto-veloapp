@@ -5,7 +5,7 @@ from locator.bike_settings_locator import back_btn
 from locator.home_locator import *
 from locator.login_locator import *
 
-
+# 车辆设置页
 class BikeSettingsPage(Keywords):
 
     def click_back_btn(self):
