@@ -89,9 +89,16 @@
   verify_method: 'get_current_unit_text'  # 操作结束后，在 InfoPage上要验证的元素的定位
   expected_result: 'km'  # 期望在InfoPage上看到的最终结果
 
+- case_id: 'info007'
+  case_name: '点击 Unit 并切换单位为英里(miles)'
+  test_type: 'bottom_dialog'
+  click_method: 'click_unit'
+  action_locator_name: 'miles_btn'
+  verify_method: 'get_current_unit_text'
+  expected_result: 'miles'
 
 # --- 类型三：Toast 消息验证（Toast Message） ---
-- case_id: 'info007'
+- case_id: 'info008'
   case_name: '点击 App Version 验证无更新提示'
   test_type: 'toast_message'
   click_method: 'click_app_version'   # 点击哪个方法来触发Toast

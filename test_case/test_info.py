@@ -29,6 +29,7 @@ class TestInfo:
 
     LOCATORS = {
         'kilometers_btn': kilometers_btn,
+        'miles_btn': miles_btn,
         'app_version_toast': app_version_toast,
     }
 
@@ -82,7 +83,9 @@ class TestInfo:
             next_page.click_back_btn()
 
     def _run_bottom_dialog_test(self, ip, case): # 参数简化
-        """处理点击后出现底部弹窗的测试流程"""
+        """
+        处理点击后出现底部弹窗的测试流程
+        """
         with allure.step(f"执行点击: {case['click_method']}"):
             getattr(ip, case['click_method'])()
 
