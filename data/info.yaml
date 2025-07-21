@@ -39,8 +39,10 @@
 #    expected_result: 'ABOUT VELOTRIC'
 
 # 直接就是一个测试用例的列表，不再需要外层的分组键
+# --- 类型一：导航到子页面（Navigation） ---
 - case_id: 'info001'
   case_name: '点击 My Rides 进入到子页面'
+  test_type: 'navigation'  # <--- 新增的类型字段
   page_object_name: 'MyRidesPage'
   click_method: 'click_my_rides'
   verify_method: 'get_my_rides_text'
@@ -48,6 +50,7 @@
 
 - case_id: 'info002'
   case_name: '点击 Account 进入到子页面'
+  test_type: 'navigation'
   page_object_name: 'AccountPage'
   click_method: 'click_account'
   verify_method: 'get_account_text'
@@ -55,6 +58,7 @@
 
 - case_id: 'info003'
   case_name: '点击 About Velotric 进入到子页面'
+  test_type: 'navigation'
   page_object_name: 'AboutPage'
   click_method: 'click_about_velotric'
   verify_method: 'get_about_velotric_text'
@@ -62,6 +66,7 @@
 
 - case_id: 'info004'
   case_name: '点击 Data Synchronization 进入到子页面'
+  test_type: 'navigation'
   page_object_name: 'DataSyncPage'
   click_method: 'click_data_synchronization'
   verify_method: 'get_data_synchronization_text'
@@ -69,7 +74,26 @@
 
 - case_id: 'info005'
   case_name: '点击 Help 进入到子页面'
+  test_type: 'navigation'
   page_object_name: 'HelpPage'
   click_method: 'click_help'
   verify_method: 'get_help_text'
   expected_result: 'HELP'
+
+# --- 类型二：底部弹窗交互（Bottom Dialog） ---
+- case_id: 'info006'
+  case_name: '点击 Unit 并切换单位为公里(km)'
+  test_type: 'bottom_dialog'
+  click_method: 'click_unit'  # 在InfoPage上点击哪个方法来触发弹窗
+  action_locator_name: 'kilometers_btn'  # 在弹窗中要点击的元素的定位器名称
+  verify_method: 'get_current_unit_text'  # 操作结束后，在 InfoPage上要验证的元素的定位
+  expected_result: 'km'  # 期望在InfoPage上看到的最终结果
+
+
+# --- 类型三：Toast 消息验证（Toast Message） ---
+- case_id: 'info007'
+  case_name: '点击 App Version 验证无更新提示'
+  test_type: 'toast_message'
+  click_method: 'click_app_version'   # 点击哪个方法来触发Toast
+  verify_locator_name: 'app_version_toast'  # 需要验证的Toast元素的定位器叫什么名字
+  expected_result: 'No update available'  # 期望的Toast文本是什么

@@ -24,3 +24,19 @@ about_velotric_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="About 
 
 # 'Help' 按钮
 help_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Help"]')
+
+# 'Unit' 按钮
+unit_btn = (AppiumBy.XPATH, '//android.view.View[contains(@content-desc, "Unit")]')
+
+# 底部弹窗中的 "Miles(mi)" 按钮
+miles_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Miles (mi)"]')
+
+# 底部弹窗中的 "Kilometers(km)" 按钮
+kilometers_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Kilometers (km)"]')
+
+# 'App Version' 按钮
+app_version_btn = (AppiumBy.XPATH, '//android.view.View[contains(@content-desc, "App Version")]')
+
+# 【新】为 "App Version" 的 "No update available" 提示添加专用定位器
+# 我们用 content-desc 来精确定位
+app_version_toast = (AppiumBy.XPATH, '//android.widget.ImageView[@content-desc="No update available"]')
