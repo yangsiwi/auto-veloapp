@@ -1,14 +1,19 @@
-import time
+# --- 导入所有需要的模块 ---
 import allure
 import pytest
 from conftest import info_page_setup
-from locator.info_locator import *
+# --- 导入所有本测试模块会用到的 Page Object ---
 from page.help_page import HelpPage
-from utils.load_yaml import load_yaml
+from page.info_page import InfoPage
 from page.about_page import AboutPage
 from page.account_page import AccountPage
 from page.my_rides_page import MyRidesPage
 from page.data_sync_page import DataSyncPage
+# --- 导入所有本测试模块会用到的交互元素的定位器 ---
+from locator.info_locator import *
+# --- 导入所有本测试模块会用到工具类 ---
+from utils.load_yaml import load_yaml
+from utils.navigation_helper import run_navigation_test
 
 
 @allure.epic("velotric app应用")
@@ -20,6 +25,7 @@ class TestInfo:
     # 创建一个 Page Object 的映射字典
     # 键是 YAML 中的字符串，值是真正的页面类
     PAGE_OBJECTS = {
+        'InfoPage': InfoPage,
         'MyRidesPage': MyRidesPage,
         'AccountPage': AccountPage,
         'AboutPage': AboutPage,
@@ -47,9 +53,16 @@ class TestInfo:
         test_type = case.get('test_type', 'navigation')  # 默认为 navigation
 
         if test_type == 'navigation':
-            self._run_navigation_test(driver, ip, case)
+            # 直接调用从外部导入的通用函数
+            # 我们把测试所需的上下文（driver, ip, case, PAGE_OBJECTS）都传给它
+            run_navigation_test(
+                driver=driver,
+                start_page_object=ip,
+                case_data=case,
+                page_object_map=self.PAGE_OBJECTS
+            )
+        # 对于非通用的流程，我们依然可以在类内部实现
         elif test_type == 'bottom_dialog':
-            # 将ip对象也传进去
             self._run_bottom_dialog_test(ip, case)
         elif test_type == 'toast_message':
             self._run_toast_test(ip, case)
@@ -57,32 +70,7 @@ class TestInfo:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
     # --- 私有测试流程实现 ---
-    def _run_navigation_test(self, driver, ip, case):
-        """
-        处理导航到子页面的测试流程
-        """
-
-        # 从 YAML 获取需要实例化的页面类名，并通过字典找到对应的类
-        NextPageClass = self.PAGE_OBJECTS[case['page_object_name']]
-        # 实例化目标页面对象
-        next_page = NextPageClass(driver)
-
-        with allure.step(f"执行点击: {case['click_method']}"):
-            # 使用 getattr 动态调用 InfoPage 上面的点击方法
-            getattr(ip, case['click_method'])()
-            # 上面的写法等同于以下的写法
-            # info_page_click_method = getattr(ip, case['click_method'])
-            # info_page_click_method()
-
-        with allure.step(f"断言页面标题为: {case['expected_result']}"):
-            actual_msg = getattr(next_page, case['verify_method'])()
-            assert actual_msg == case['expected_result'], f"期望值: {case['expected_result']}, 实际值: {actual_msg}"
-
-        with allure.step("返回到个人信息页"):
-            time.sleep(3)
-            next_page.click_back_btn()
-
-    def _run_bottom_dialog_test(self, ip, case): # 参数简化
+    def _run_bottom_dialog_test(self, ip, case):  # 参数简化
         """
         处理点击后出现底部弹窗的测试流程
         """
@@ -94,7 +82,7 @@ class TestInfo:
             ip.click_element(action_locator)
 
         with allure.step(f"断言主页面状态已更新为: {case['expected_result']}"):
-            # 【核心修正】通过 getattr 动态调用 InfoPage 上的验证方法
+            # 通过 getattr 动态调用 InfoPage 上的验证方法
             verify_method = getattr(ip, case['verify_method'])
             actual_msg = verify_method()
             assert actual_msg == case['expected_result'], "主页面状态断言失败"
@@ -106,17 +94,44 @@ class TestInfo:
         with allure.step(f"执行点击: {case['click_method']}"):
             getattr(ip, case['click_method'])()
 
-        # 从 LOCATORS 字典获取"Toast"的定位器
+        # 从 LOCATORS 字典获取 "Toast" 的定位器
         toast_locator = self.LOCATORS[case['verify_locator_name']]
 
         with allure.step(f"断言Toast消息为: '{case['expected_result']}'"):
-            # 1. 验证"Toast"出现，并获取其文本进行断言
+            # 1. 验证 "Toast" 出现，并获取其文本进行断言
             actual_msg = ip.get_element_attribute(toast_locator, 'content-desc')
             assert actual_msg == case['expected_result'], "Toast消息文本断言失败"
 
         with allure.step("等待Toast消息消失"):
             # 2. 等待同一个定位器对应的元素从页面上消失
             assert ip.wait_for_element_to_be_invisible(toast_locator, timeout=5), "Toast消息未按预期消失"
+
+
+    # def _run_navigation_test(self, driver, ip, case):
+    #     """
+    #     处理导航到子页面的测试流程
+    #     """
+    #
+    #     # 从 YAML 获取需要实例化的页面类名，并通过字典找到对应的类
+    #     NextPageClass = self.PAGE_OBJECTS[case['page_object_name']]
+    #     # 实例化目标页面对象
+    #     next_page = NextPageClass(driver)
+    #
+    #     with allure.step(f"执行点击: {case['click_method']}"):
+    #         # 使用 getattr 动态调用 InfoPage 上面的点击方法
+    #         getattr(ip, case['click_method'])()
+    #         # 上面的写法等同于以下的写法
+    #         # info_page_click_method = getattr(ip, case['click_method'])
+    #         # info_page_click_method()
+    #
+    #     with allure.step(f"断言页面标题为: {case['expected_result']}"):
+    #         actual_msg = getattr(next_page, case['verify_method'])()
+    #         assert actual_msg == case['expected_result'], f"期望值: {case['expected_result']}, 实际值: {actual_msg}"
+    #
+    #     with allure.step("返回到个人信息页"):
+    #         time.sleep(3)
+    #         next_page.click_back_btn()
+
 
     # 使用合并后的数据进行参数化
     # @pytest.mark.parametrize("case", all_subpage_data, ids=[f"{case['case_name']}" for case in all_subpage_data])
