@@ -34,3 +34,11 @@ class MyRidesPage(Keywords):
     @allure.step("获取日期按钮的文案")
     def get_date_tab_text(self, date_tab_btn):
         return self.get_element_attribute(date_tab_btn, 'content-desc')
+
+    @allure.step("滑动到页面底部")
+    def scroll_to_bottom(self):
+        super().scroll_to_bottom()
+
+    @allure.step("滑动到页面底部")
+    def scroll_to_top(self):
+        super().scroll_to_top()

@@ -1,5 +1,8 @@
 import allure
 from selenium.common import TimeoutException
+from selenium.webdriver.common.actions import interaction
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 
@@ -111,4 +114,60 @@ class Keywords:
         if self.driver.is_keyboard_shown:
             self.driver.hide_keyboard()
 
-    # --- 新增：页面滚动方法 ---
+    # --- 页面滚动方法 ---
+
+    def _get_screen_size(self):
+        """内部辅助方法，获取屏幕尺寸。"""
+        return self.driver.get_window_size()
+
+    @allure.step("滚动到页面底部 (向上滑动)")
+    def scroll_to_bottom(self, duration_ms=600):
+        size = self._get_screen_size()
+        width = size['width']
+        height = size['height']
+
+        start_x = width // 2
+        start_y = int(height * 0.8)
+        end_y = int(height * 0.2)
+
+        # ✅ 创建 PointerInput（用 'touch' 不是 'finger'）
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+
+        # ✅ 正确方式：创建 ActionBuilder 并传入 pointer_inputs
+        actions = ActionBuilder(self.driver, mouse=finger)
+
+        # ✅ 构建动作链
+        actions.pointer_action.move_to_location(start_x, start_y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(duration_ms / 1000)
+        actions.pointer_action.move_to_location(start_x, end_y)
+        actions.pointer_action.release()
+
+        # ✅ 执行滑动
+        actions.perform()
+
+    @allure.step("滚动到页面顶部 (向下滑动)")
+    def scroll_to_top(self, duration_ms=600):
+        size = self._get_screen_size()
+        width = size['width']
+        height = size['height']
+
+        start_x = width // 2
+        start_y = int(height * 0.2)  # 从页面上方开始
+        end_y = int(height * 0.8)  # 滑到页面下方
+
+        # 创建 PointerInput（仍然是 touch 类型）
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+
+        # 创建 ActionBuilder
+        actions = ActionBuilder(self.driver, mouse=finger)
+
+        # 构建动作链（从上往下滑）
+        actions.pointer_action.move_to_location(start_x, start_y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(duration_ms / 1000)
+        actions.pointer_action.move_to_location(start_x, end_y)
+        actions.pointer_action.release()
+
+        # 执行动作
+        actions.perform()
