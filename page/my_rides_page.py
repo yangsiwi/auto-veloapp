@@ -1,4 +1,7 @@
 import allure
+import pytest
+from selenium.common import TimeoutException
+
 from base.keywords import Keywords
 from locator.info_locator import *
 from locator.my_rides_locator import *
@@ -35,10 +38,23 @@ class MyRidesPage(Keywords):
     def get_date_tab_text(self, date_tab_btn):
         return self.get_element_attribute(date_tab_btn, 'content-desc')
 
-    @allure.step("滑动到页面底部")
-    def scroll_to_bottom(self):
-        super().scroll_to_bottom()
+    @allure.step("滚动到页面最底部")
+    def scroll_to_list_bottom(self):
+        """
+        调用底层的智能滚动方法，确保滚动到列表的尽头。
+        """
+        self.scroll_to_very_bottom()
 
-    @allure.step("滑动到页面底部")
-    def scroll_to_top(self):
-        super().scroll_to_top()
+    # 一个专门用于获取最后一条记录的方法
+    @allure.step("获取最后一条骑行记录的文本")
+    def get_last_ride_card_text(self):
+        """
+        获取当前可见的最后一条骑行记录的文本。
+        【注意】调用此方法前，应确保已滚动到底部。
+        """
+        # 使用我们之前设计的 LAST_RIDE_CARD_ITEM 定位器
+        try:
+            last_element = self.wait_for_element_to_be_visible(LAST_RIDE_CARD_ITEM)
+            return last_element.get_attribute('content-desc')
+        except TimeoutException:
+            pytest.fail("在页面上找不到最后一条骑行记录的元素。")

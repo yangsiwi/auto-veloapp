@@ -1,11 +1,10 @@
 import time
-
 import allure
 import pytest
-
 from locator.my_rides_locator import *
 from page.my_rides_page import MyRidesPage
 from utils.load_yaml import load_yaml
+
 
 class TestMyRides:
     data = load_yaml('./data/my_rides.yaml')
@@ -31,10 +30,7 @@ class TestMyRides:
         if test_type == 'switch':
             self._run_switch_date(mrp, case)
         elif test_type == 'scroll_bottom':
-            # 【修正】调用类内部的私有方法
-            self._run_scroll_to_bottom(mrp, case)
-        elif test_type == 'scroll_top':
-            self._run_scroll_to_top(mrp, case)
+            TestMyRides._run_scroll_to_bottom(mrp)
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
@@ -60,27 +56,18 @@ class TestMyRides:
             assert actual_text == case['expected_result'], \
                 f"断言失败, 期望: '{case['expected_result']}', 实际: '{actual_text}'"
 
-    # 【修正】将滚动测试流程也封装成一个类方法
-    def _run_scroll_to_bottom(self, mrp: MyRidesPage, case: dict):
-        """处理滚动到页面底部的测试流程"""
-        with allure.step("滚动页面到底部"):
-            # 直接调用 MyRidesPage 上的滚动方法
-            mrp.scroll_to_bottom()
-        time.sleep(2)
-        # 【优化建议】滚动后最好有一个断言，来验证滚动是否真的发生了
-        # 例如，我们可以断言页面底部的某个元素现在可见了
-        # with allure.step("断言页面底部元素已可见"):
-        #     # 假设有一个 bottom_element_locator
-        #     assert mrp.wait_for_element_to_be_visible(bottom_element_locator, timeout=3), \
-        #         "滚动到底部后，预期的底部元素未出现"
+        # 【核心】在方法定义前加上 @staticmethod 装饰器
 
-        # 为了简单起见，我们先只执行滚动操作
-        pass
-
-    def _run_scroll_to_top(self, mrp: MyRidesPage, case: dict):
-        """处理滚动到页面顶部的测试流程"""
-        with allure.step("滚动页面到顶部"):
-            # 直接调用 MyRidesPage 上的滚动方法
-            mrp.scroll_to_top()
-
-        time.sleep(2)
+    @staticmethod
+    def _run_scroll_to_bottom(mrp: MyRidesPage):
+        """
+        处理滚动到底部并验证最后一条记录的测试流程。
+        这是一个静态方法，它的行为不依赖于TestMyRides的任何实例状态。
+        """
+        with allure.step("步骤一：执行智能滚动，确保到达列表底部"):
+            mrp.scroll_to_list_bottom()
+        with allure.step("步骤二：获取并验证最后一条记录"):
+            last_ride_text = mrp.get_last_ride_card_text()
+            allure.attach(f"成功滚动到底部，获取到最后一条记录: {last_ride_text}", name="验证结果")
+            assert last_ride_text is not None and len(last_ride_text) > 0, \
+                "已滚动到底部，但未能获取到最后一条记录的文本。"

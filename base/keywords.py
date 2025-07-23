@@ -1,4 +1,7 @@
+import time
+
 import allure
+import pytest
 from selenium.common import TimeoutException
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
@@ -120,8 +123,8 @@ class Keywords:
         """内部辅助方法，获取屏幕尺寸。"""
         return self.driver.get_window_size()
 
-    @allure.step("滚动到页面底部 (向上滑动)")
-    def scroll_to_bottom(self, duration_ms=600):
+    @allure.step("执行一次向上滑动")
+    def swipe_up(self, duration_ms=0):
         size = self._get_screen_size()
         width = size['width']
         height = size['height']
@@ -146,8 +149,8 @@ class Keywords:
         # ✅ 执行滑动
         actions.perform()
 
-    @allure.step("滚动到页面顶部 (向下滑动)")
-    def scroll_to_top(self, duration_ms=600):
+    @allure.step("执行一次向下滑动")
+    def swipe_down(self, duration_ms=0):
         size = self._get_screen_size()
         width = size['width']
         height = size['height']
@@ -171,3 +174,47 @@ class Keywords:
 
         # 执行动作
         actions.perform()
+
+    @allure.step("获取所有匹配元素的列表")
+    def find_all_elements(self, locator):
+        """
+        等待并返回所有匹配定位器的元素列表。
+        """
+        try:
+            # 等待至少有一个元素出现
+            WebDriverWait(self.driver, self.timeout, self.poll_frequency).until(
+                ec.presence_of_all_elements_located(locator)
+            )
+            return self.driver.find_elements(*locator)
+        except TimeoutException:
+            # 如果一个都找不到，返回一个空列表
+            return []
+
+    @allure.step("滚动直到页面底部")
+    def scroll_to_very_bottom(self, max_swipes=300):
+        """
+        持续向上滑动，直到页面无法再滚动（已到达底部），或达到最大滑动次数。
+        """
+        # 获取滑动前的页面源码
+        page_source_before_swipe = self.driver.page_source
+
+        for i in range(max_swipes):
+            allure.attach(f"执行第 {i + 1} 次向上滑动...", name="滚动状态")
+            self.swipe_up()
+            # 短暂等待UI刷新
+            # time.sleep(1)
+
+            # 获取滑动后的页面源码
+            page_source_after_swipe = self.driver.page_source
+
+            # 如果滑动后源码没有变化，说明已经到底部了
+            if page_source_after_swipe == page_source_before_swipe:
+                allure.attach("页面源码未变，已到达底部。", name="滚动结束")
+                return True  # 表示成功滚动到底部
+
+            # 更新页面源码，为下一次比较做准备
+            page_source_before_swipe = page_source_after_swipe
+
+        # 如果循环结束还没到底部，可以根据需要决定是报错还是警告
+        pytest.fail(f"在尝试滚动 {max_swipes} 次后，页面仍未到达底部。")
+        return None
