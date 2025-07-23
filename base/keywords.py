@@ -1,10 +1,7 @@
 import allure
 from selenium.common import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.actions.action_builder import ActionBuilder
-from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.support import expected_conditions as ec
 
 
 # 项目中常用的操作 找到元素点击  找到元素输入  找元素 显示等待 等待 Keywords(driver)
@@ -25,7 +22,7 @@ class Keywords:
         """
         try:
             return WebDriverWait(self.driver, self.timeout, self.poll_frequency).until(
-                EC.visibility_of_element_located(locator)
+                ec.visibility_of_element_located(locator)
             )
         except TimeoutException:
             allure.attach(self.driver.get_screenshot_as_png(), f"等待元素 {locator} 可见超时",
@@ -42,7 +39,7 @@ class Keywords:
         """
         try:
             WebDriverWait(self.driver, timeout, self.poll_frequency).until(
-                EC.invisibility_of_element_located(locator)
+                ec.invisibility_of_element_located(locator)
             )
             return True
         except TimeoutException:
@@ -59,7 +56,7 @@ class Keywords:
         """
         try:
             return WebDriverWait(self.driver, self.timeout, self.poll_frequency).until(
-                EC.element_to_be_clickable(locator)
+                ec.element_to_be_clickable(locator)
             )
         except TimeoutException:
             allure.attach(self.driver.get_screenshot_as_png(), f"等待元素 {locator} 可点击超时",
@@ -106,30 +103,6 @@ class Keywords:
         element = self.wait_for_element_to_be_visible(locator)
         return element.get_attribute(attribute_name)
 
-    @allure.step("长按元素")
-    def long_press_element(self, locator, duration_seconds=3):
-        """
-        使用 W3C Actions API 实现长按操作。
-        :param locator: 元素定位器
-        :param duration_seconds: 长按的持续时间（秒）
-        """
-        element = self.wait_for_element_to_be_visible(locator)
-
-        # 1.创建一个指针输入源（模拟手指）
-        finger = PointerInput("touch", "finger")
-
-        # 2.创建一个动作序列
-        actions = ActionChains(self.driver)
-
-        # 3.定义动作：移动到元素中心 -> 按下手指 -> 等待指定时间 -> 松开手指
-        actions.move_to_element(element)
-        actions.pointer_down(button=PointerInput.MOUSE_BUTTON_LEFT)
-        actions.pause(duration_seconds)
-        actions.pointer_up(button=PointerInput.MOUSE_BUTTON_LEFT)
-
-        # 4.执行动作
-        actions.perform()
-
     @allure.step("隐藏键盘")
     def hide_keyboard(self):
         """
@@ -138,51 +111,4 @@ class Keywords:
         if self.driver.is_keyboard_shown:
             self.driver.hide_keyboard()
 
-
     # --- 新增：页面滚动方法 ---
-    def _get_screen_size(self):
-        """
-        获取当前屏幕的尺寸。
-        """
-        return self.driver.get_window_size()
-
-    @allure.step("页面滚动到底部")
-    def scroll_to_bottom(self, duration_ms=1000):
-        """
-        从屏幕的底部中心向上滑动一小段距离，模拟滚动到底部的效果。
-        可以多次调用以滚动更多内容。
-        """
-        size = self._get_screen_size()
-        width = size["width"]
-        height = size["height"]
-
-        # 定义滚动的起点和终点
-        # 从屏幕的 80% 的位置，滑动到 20% 高度的位置
-        start_x = width // 2
-        start_y = int(height * 0.8)
-        end_y = int(height * 0.2)
-
-        # 使用 W3C Actions 来执行滚动
-        finger = PointerInput("touch", "finger")
-        actions = ActionChains(self.driver)
-
-        actions.move_to_location(start_x, start_y)
-        actions.pointer_down(button=PointerInput.MOUSE_BUTTON_LEFT)
-        # 将滑动拆分为多个小步骤，模拟更平滑的滚动
-        actions.pause(0.1)
-        actions.move_to_location(start_x, end_y, duration=duration_ms)
-        actions.pointer_up(button=PointerInput.MOUSE_BUTTON_LEFT)
-        actions.perform()
-        allure.attach(f"执行向上滑动: 从 ({start_x}, {start_y}) 到 ({start_x}, {end_y})", name="滚动日志")
-
-    # @allure.step("清空输入框")
-    # def clear_input(self, place):
-    #     try:
-    #         element = self.wait_explicit(place)
-    #         element.clear()
-    #     except Exception as e:
-    #         print(f"清空失败: {e}")
-
-    # @allure.step("长按元素 {duration} 秒")
-    # def long_press_element(self, place, duration=3):
-    #     pass

@@ -15,14 +15,22 @@ class MyRidesPage(Keywords):
     def get_my_rides_text(self):
         return self.get_element_attribute(MY_RIDES_TEXT, 'content-desc')
 
-    # @allure.step("获取 'ABOUT VELOTRIC' 页面的 'ABOUT VELOTRIC' 文案")
-    # def get_about_velotric_text(self):
-    #     return self.get_element_attribute(ABOUT_VELOTRIC_TEXT, 'content-desc')
+    @allure.step("点击 day 按钮")
+    def click_day_tab(self):
+        self.click_element(day_tab_btn)
 
-    # @allure.step("点击 'Terms of Use' 按钮'")
-    # def click_terms_of_use(self):
-    #     self.click_element(terms_of_use)
-    #
-    # @allure.step("点击 'Privacy Policy' 按钮")
-    # def click_privacy_policy(self):
-    #     self.click_element(privacy_policy)
+    @allure.step("点击 Week 按钮")
+    def click_week_tab(self):
+        self.click_element(week_tab_btn)
+
+    @allure.step("点击 Month 按钮")
+    def click_month_tab(self):
+        self.click_element(month_tab_btn)
+
+    @allure.step("点击 Year 按钮")
+    def click_year_tab(self):
+        self.click_element(year_tab_btn)
+
+    @allure.step("获取日期按钮的文案")
+    def get_date_tab_text(self, date_tab_btn):
+        return self.get_element_attribute(date_tab_btn, 'content-desc')

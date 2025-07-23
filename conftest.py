@@ -8,6 +8,7 @@ from page.about_page import AboutPage
 from page.home_page import HomePage
 from page.info_page import InfoPage
 from page.login_page import LoginPage
+from page.my_rides_page import MyRidesPage
 from utils.load_yaml import load_yaml
 
 
@@ -15,8 +16,9 @@ from utils.load_yaml import load_yaml
 def get_driver_options():
     options = UiAutomator2Options()
     options.platform_name = "Android"
-    options.platform_version = "14"
-    options.device_name = "R3CT90HL0QB"
+    options.platform_version = "12"
+    # options.device_name = "R3CT90HL0QB"
+    options.device_name = "ZY22F2W79N"
     options.automation_name = "UiAutomator2"
     options.app_package = "com.mddoscar.velotricbike"
     options.app_activity = "com.example.velotric_app.MainActivity"
@@ -125,7 +127,7 @@ def about_page_setup(logged_in_driver):
     一个专门为关于模块测试准备的 fixture。
     它会确保测试开始时，App已经位于关于信息页面。
     """
-    print("\n[Module Setup for Info Test] : 导航到关于页...")
+    print("\n[Module Setup for About Test] : 导航到关于页...")
 
     hp = HomePage(logged_in_driver)
     hp.click_userinfo()
@@ -136,9 +138,31 @@ def about_page_setup(logged_in_driver):
     yield logged_in_driver, AboutPage(logged_in_driver)
 
     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
-    print("\n[Module Teardown for Info Test] : 从关于信息页返回主页。")
+    print("\n[Module Teardown for About Test] : 从关于页返回主页。")
     AboutPage(logged_in_driver).click_back_btn()
     InfoPage(logged_in_driver).click_back_btn()
+
+@pytest.fixture(scope='module')
+def my_rides_page_setup(logged_in_driver):
+    """
+    一个专门为“我的骑行”测试准备的 fixture。
+    它会确保测试开始时，App已经位于“我的骑行”页面。
+    """
+    print("\n[Module Setup for My Rides Test] : 导航到我的骑行页...")
+
+    hp = HomePage(logged_in_driver)
+    hp.click_userinfo()
+    ip = InfoPage(logged_in_driver)
+    ip.click_my_rides()
+
+    # 将 driver 和 MyRidesPage 实例一同传递给测试用例
+    yield logged_in_driver, MyRidesPage(logged_in_driver)
+
+    # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+    print("\n[Module Teardown for My Rides Test] : 从关于我的骑行页返回主页。")
+    MyRidesPage(logged_in_driver).click_back_btn()
+    InfoPage(logged_in_driver).click_back_btn()
+
 
 # 钩子函数 作用：在测试用例执行后（无论成功/失败）自动截图添加到allure报告中
 # tryfirst 确保钩子优先执行
