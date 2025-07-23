@@ -58,3 +58,7 @@ class MyRidesPage(Keywords):
             return last_element.get_attribute('content-desc')
         except TimeoutException:
             pytest.fail("在页面上找不到最后一条骑行记录的元素。")
+
+    @allure.step("点击最后一条骑行记录卡片")
+    def click_last_ride_card(self):
+        self.click_element(LAST_RIDE_CARD_ITEM)

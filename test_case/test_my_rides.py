@@ -3,7 +3,9 @@ import allure
 import pytest
 from locator.my_rides_locator import *
 from page.my_rides_page import MyRidesPage
+from page.ride_detail_page import RideDetailPage
 from utils.load_yaml import load_yaml
+from utils.navigation_helper import run_navigation_test
 
 
 class TestMyRides:
@@ -14,6 +16,10 @@ class TestMyRides:
         'week_tab_btn': week_tab_btn,
         'month_tab_btn': month_tab_btn,
         'year_tab_btn': year_tab_btn
+    }
+
+    PAGE_OBJECTS = {
+        'RideDetailPage': RideDetailPage
     }
 
     @pytest.mark.run(order=6)
@@ -31,6 +37,14 @@ class TestMyRides:
             self._run_switch_date(mrp, case)
         elif test_type == 'scroll_bottom':
             TestMyRides._run_scroll_to_bottom(mrp)
+        elif test_type == 'navigation':
+            run_navigation_test(
+                driver=driver,
+                start_page_object=mrp,
+                case_data=case,
+                page_object_map=self.PAGE_OBJECTS
+            )
+            time.sleep(10)
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
@@ -71,3 +85,5 @@ class TestMyRides:
             allure.attach(f"成功滚动到底部，获取到最后一条记录: {last_ride_text}", name="验证结果")
             assert last_ride_text is not None and len(last_ride_text) > 0, \
                 "已滚动到底部，但未能获取到最后一条记录的文本。"
+
+        time.sleep(3)
