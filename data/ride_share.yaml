@@ -1,0 +1,15 @@
+- case_id: 'ride_share_001'
+  test_type: 'swipe_left'
+  case_name: '向左滑动分享卡片'
+
+#- case_id: 'ride_share_002'
+#  test_type: 'swipe_right'
+#  case_name: '向右滑动分享卡片'
+#- case_id: 'ride_share_003'
+#  test_type: 'click_share_btn'
+#  case_name: '点击 Share 按钮'
+#  start_page_object_name: 'RideDetailPage' # <--- 新增：指明从哪个页面开始
+#  page_object_name: 'RideSharePage'
+#  click_method: 'click_share_btn'
+#  verify_method: 'get_share_my_ride_text'
+#  expected_result: 'SHARE MY RIDE'

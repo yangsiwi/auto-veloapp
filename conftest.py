@@ -4,11 +4,14 @@ import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
+from locator.my_rides_locator import RIDE_CARD_ITEMS, FIRST_RIDE_CARD_ITEM
 from page.about_page import AboutPage
 from page.home_page import HomePage
 from page.info_page import InfoPage
 from page.login_page import LoginPage
 from page.my_rides_page import MyRidesPage
+from page.ride_detail_page import RideDetailPage
+from page.ride_share_page import RideSharePage
 from utils.load_yaml import load_yaml
 
 
@@ -104,6 +107,7 @@ def login_test_driver(request, get_driver_options):
     print("\n[Function Teardown for Login Test] : 关闭独立的Driver。")
     driver.quit()
 
+
 @pytest.fixture(scope='module')
 def info_page_setup(logged_in_driver):
     """
@@ -120,6 +124,7 @@ def info_page_setup(logged_in_driver):
     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
     print("\n[Module Teardown for Info Test] : 从个人信息页返回主页。")
     InfoPage(logged_in_driver).click_back_btn()
+
 
 @pytest.fixture(scope='module')
 def about_page_setup(logged_in_driver):
@@ -142,6 +147,7 @@ def about_page_setup(logged_in_driver):
     AboutPage(logged_in_driver).click_back_btn()
     InfoPage(logged_in_driver).click_back_btn()
 
+
 @pytest.fixture(scope='module')
 def my_rides_page_setup(logged_in_driver):
     """
@@ -160,6 +166,63 @@ def my_rides_page_setup(logged_in_driver):
 
     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
     print("\n[Module Teardown for My Rides Test] : 从关于我的骑行页返回主页。")
+    MyRidesPage(logged_in_driver).click_back_btn()
+    InfoPage(logged_in_driver).click_back_btn()
+
+
+@pytest.fixture(scope='module')
+def ride_detail_page_setup(logged_in_driver):
+
+    """
+    一个专门为 “骑行详情页” 测试准备的 fixture。
+    它会确保测试开始时，App已经位于 “骑行详情” 页面。
+    """
+
+    print("\n[Module Setup for My Rides Test] : 导航到骑行详情页...")
+
+    hp = HomePage(logged_in_driver)
+    hp.click_userinfo()
+    ip = InfoPage(logged_in_driver)
+    ip.click_my_rides()
+    mrp = MyRidesPage(logged_in_driver)
+    mrp.click_element(FIRST_RIDE_CARD_ITEM)
+
+    # 将 driver 和 MyRidesPage 实例一同传递给测试用例
+    yield logged_in_driver, RideDetailPage(logged_in_driver)
+
+    # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+    print("\n[Module Teardown for My Rides Test] : 从关于我的骑行页返回主页。")
+    RideDetailPage(logged_in_driver).click_back_btn()
+    MyRidesPage(logged_in_driver).click_back_btn()
+    InfoPage(logged_in_driver).click_back_btn()
+
+@pytest.fixture(scope='module')
+def ride_share_page_setup(logged_in_driver):
+
+    """
+    一个专门为 “分享骑行页” 测试准备的 fixture。
+    它会确保测试开始时，App已经位于 “分享骑行页” 页面。
+    """
+
+    print("\n[Module Setup for My Rides Test] : 导航到分享骑行页...")
+
+    hp = HomePage(logged_in_driver)
+    hp.click_userinfo()
+    ip = InfoPage(logged_in_driver)
+    ip.click_my_rides()
+    mrp = MyRidesPage(logged_in_driver)
+    mrp.click_element(FIRST_RIDE_CARD_ITEM)
+    rdp = RideDetailPage(logged_in_driver)
+    time.sleep(3)
+    rdp.click_share_btn()
+
+    # 将 driver 和 MyRidesPage 实例一同传递给测试用例
+    yield logged_in_driver, RideSharePage(logged_in_driver)
+
+    # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+    print("\n[Module Teardown for My Rides Test] : 从关于我的骑行页返回主页。")
+    RideSharePage(logged_in_driver).click_back_btn()
+    RideDetailPage(logged_in_driver).click_back_btn()
     MyRidesPage(logged_in_driver).click_back_btn()
     InfoPage(logged_in_driver).click_back_btn()
 

@@ -5,6 +5,11 @@ from appium.webdriver.common.appiumby import AppiumBy
 """
 
 # 返回按钮
-back_btn = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.View").instance(4)')
+back_btn = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.View").instance(6)')
 
+# 地图
+map_locator = (AppiumBy.XPATH,
+               '//android.widget.FrameLayout[@resource-id="android:id/content"]/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[1]/android.widget.FrameLayout')
+
+# Share分享按钮
 share_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Share"]')

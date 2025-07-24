@@ -5,9 +5,13 @@ import pytest
 from selenium.common import TimeoutException
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
 from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
+# 【核心】我们只需要这两个底层模块
+from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.common.actions import interaction
 
 
 # 项目中常用的操作 找到元素点击  找到元素输入  找元素 显示等待 等待 Keywords(driver)
@@ -272,7 +276,7 @@ class Keywords:
         return None
 
     # 在指定元素内部进行水平滑动
-    @allure.step("在元素 '{locator}' 内部向左滑动")
+    @allure.step("在元素 '{locator}' 内部向左或者右水平直线滑动")
     def swipe_element_horizontally(self, locator, direction: str = "left", duration_ms=200):
         """
         找到一个元素，并在其内部执行水平滑动。
@@ -362,3 +366,101 @@ class Keywords:
         allure.attach(
             f"执行带弧度滑动: 从 ({start_x}, {element_center_y}) -> 中点({mid_x}, {mid_y_with_offset}) -> 到 ({end_x}, {element_center_y})",
             name="弧线滑动日志")
+
+    def pinch_in_element(self, locator, direction="out", percent=0.8, duration_ms=500):
+        """
+        在指定元素上执行双指缩放操作（捏合或放大）
+        :param locator: 元素定位器
+        :param direction: 'out'缩小/'in'放大
+        :param percent: 移动距离比例(0-1)
+        :param duration_ms: 动作持续时间(毫秒)
+        """
+        try:
+            # 1. 等待元素可见并获取位置信息
+            WebDriverWait(self.driver, 10).until(ec.visibility_of_element_located(locator))
+            element = self.driver.find_element(*locator)
+            rect = element.rect
+            size = self.driver.get_window_size()
+            print(f"屏幕尺寸: {size}")
+            print(f"元素位置信息: {rect}")
+
+            # 2. 计算地图区域（假设地图占屏幕高度的40%）
+            map_height = size['height'] * 0.4
+            center_x = size['width'] / 2
+            center_y = map_height / 2  # 地图区域的中心点
+            offset_x = (size['width'] * percent / 2)  # 基于屏幕宽度的偏移
+            offset_y = (map_height * percent / 2)  # 基于地图高度的偏移
+
+            # 3. 设置不同方向的起止点，偏移通知栏和顶部
+            notify_bar_offset = 80  # 假设通知栏高度为80像素，可根据设备调整
+            start_y_offset = map_height * 0.2  # 从地图顶部向下偏移20%作为起始点
+            if direction == "out":
+                # 缩小：从外向内移动
+                f1_start = (center_x - offset_x, start_y_offset + notify_bar_offset)
+                f2_start = (center_x + offset_x, map_height - start_y_offset + notify_bar_offset)
+                f1_end = f2_end = (center_x, center_y + notify_bar_offset)
+            elif direction == "in":
+                # 放大：从内向外移动
+                f1_start = f2_start = (center_x, center_y + notify_bar_offset)
+                f1_end = (center_x - offset_x, start_y_offset + notify_bar_offset)
+                f2_end = (center_x + offset_x, map_height - start_y_offset + notify_bar_offset)
+            else:
+                raise ValueError("direction参数必须是'in'或'out'")
+
+            # 4. 验证坐标是否在地图区域范围内
+            if (f1_start[0] < 0 or f1_start[1] < notify_bar_offset or f2_start[0] < 0 or f2_start[
+                1] < notify_bar_offset or
+                    f1_end[0] < 0 or f1_end[1] < notify_bar_offset or f2_end[0] < 0 or f2_end[1] < notify_bar_offset or
+                    f1_start[0] > size['width'] or f1_start[1] > map_height + notify_bar_offset or
+                    f2_start[0] > size['width'] or f2_start[1] > map_height + notify_bar_offset or
+                    f1_end[0] > size['width'] or f1_end[1] > map_height + notify_bar_offset or
+                    f2_end[0] > size['width'] or f2_end[1] > map_height + notify_bar_offset):
+                raise ValueError("坐标超出地图区域范围，请调整percent参数")
+
+            print(f"手指1路径: {f1_start} -> {f1_end}")
+            print(f"手指2路径: {f2_start} -> {f2_end}")
+
+            # 5. 创建动作序列，添加曲线路径
+            actions = ActionBuilder(self.driver)
+
+            # 第一根手指（添加中间控制点模拟曲线）
+            finger1 = actions.add_pointer_input(POINTER_TOUCH, "finger1")
+            finger1.create_pointer_move(duration=0, x=int(f1_start[0]), y=int(f1_start[1]))
+            finger1.create_pointer_down(button=0)
+            # 中间点略微偏移，形成弧形
+            mid_x1 = int((f1_start[0] + f1_end[0]) / 2 + (f1_end[1] - f1_start[1]) * 0.2)  # 横向偏移
+            mid_y1 = int((f1_start[1] + f1_end[1]) / 2 - (f1_end[0] - f1_start[0]) * 0.2)  # 纵向偏移
+            finger1.create_pointer_move(duration=duration_ms // 2, x=mid_x1, y=mid_y1)
+            finger1.create_pointer_move(duration=duration_ms // 2, x=int(f1_end[0]), y=int(f1_end[1]))
+            finger1.create_pointer_up(button=0)
+
+            # 第二根手指（添加中间控制点模拟曲线）
+            finger2 = actions.add_pointer_input(POINTER_TOUCH, "finger2")
+            finger2.create_pointer_move(duration=0, x=int(f2_start[0]), y=int(f2_start[1]))
+            finger2.create_pointer_down(button=0)
+            # 中间点略微偏移，形成弧形
+            mid_x2 = int((f2_start[0] + f2_end[0]) / 2 - (f2_end[1] - f2_start[1]) * 0.2)  # 横向偏移
+            mid_y2 = int((f2_start[1] + f2_end[1]) / 2 + (f2_end[0] - f2_start[0]) * 0.2)  # 纵向偏移
+            finger2.create_pointer_move(duration=duration_ms // 2, x=mid_x2, y=mid_y2)
+            finger2.create_pointer_move(duration=duration_ms // 2, x=int(f2_end[0]), y=int(f2_end[1]))
+            finger2.create_pointer_up(button=0)
+
+            # 6. 执行动作
+            print("正在执行缩放操作...")
+            actions.perform()
+            time.sleep(2)  # 等待地图控件响应
+
+            # 7. 可选：尝试JavaScript缩放（如果ActionBuilder失败）
+            # try:
+            #     self.driver.execute_script("mobile: pinch", {
+            #         "element": element.id,
+            #         "scale": 0.5 if direction == "out" else 2.0,
+            #         "velocity": 1.0
+            #     })
+            #     print("已尝试通过JavaScript执行缩放")
+            # except Exception as js_e:
+            #     print(f"JavaScript缩放失败: {str(js_e)}")
+
+        except Exception as e:
+            print(f"执行缩放操作时出错: {str(e)}")
+            raise
