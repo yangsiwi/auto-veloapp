@@ -7,7 +7,8 @@ from page.ride_detail_page import RideDetailPage
 from utils.load_yaml import load_yaml
 from utils.navigation_helper import run_navigation_test
 
-
+@allure.epic("velotric app应用")
+@allure.feature("我的骑行记录模块")
 class TestMyRides:
     data = load_yaml('./data/my_rides.yaml')
 
@@ -37,6 +38,10 @@ class TestMyRides:
             self._run_switch_date(mrp, case)
         elif test_type == 'scroll_bottom':
             TestMyRides._run_scroll_to_bottom(mrp)
+        elif test_type == 'swipe_right':
+            TestMyRides._run_scroll_to_right(mrp)
+        elif test_type == 'swipe_left':
+            TestMyRides._run_scroll_to_left(mrp)
         elif test_type == 'navigation':
             run_navigation_test(
                 driver=driver,
@@ -87,3 +92,15 @@ class TestMyRides:
                 "已滚动到底部，但未能获取到最后一条记录的文本。"
 
         time.sleep(3)
+
+    @staticmethod
+    def _run_scroll_to_right(mrp: MyRidesPage):
+        with allure.step("向右滑动"):
+            mrp.swipe_chart_right()
+        time.sleep(5)
+
+    @staticmethod
+    def _run_scroll_to_left(mrp: MyRidesPage):
+        with allure.step("向左滑动"):
+            mrp.swipe_chart_left()
+        time.sleep(5)

@@ -15,6 +15,9 @@ month_tab_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Month"]')
 # Year 按钮
 year_tab_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Year"]')
 
+# RIDE_CHART
+RIDE_CHART = (AppiumBy.XPATH, '//android.widget.ScrollView/android.view.View[7]')
+
 # 定位【所有】骑行记录卡片的通用 XPath
 # 我们通过 content-desc 包含 "AM" 或 "PM" 来识别它们
 RIDE_CARD_ITEMS = (AppiumBy.XPATH,

@@ -175,6 +175,58 @@ class Keywords:
         # 执行动作
         actions.perform()
 
+    # 【核心新增】向左滑动的方法
+    @allure.step("执行一次向左滑动")
+    def swipe_left(self, duration_ms=200):
+        """
+        从屏幕的右侧中心向左侧中心滑动，模拟向左滑动。
+        """
+        size = self._get_screen_size()
+        width = size['width']
+        height = size['height']
+
+        # Y轴保持在屏幕垂直中点，确保是水平滑动
+        y = int(height * 0.4)  # 选择一个区域，比如40%的高度，正好在图表区域
+        # X轴从右向左
+        start_x = int(width * 0.8)
+        end_x = int(width * 0.2)
+
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        actions = ActionBuilder(self.driver, mouse=finger)
+
+        actions.pointer_action.move_to_location(start_x, y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(duration_ms / 1000)
+        actions.pointer_action.move_to_location(end_x, y)
+        actions.pointer_action.release()
+        actions.perform()
+
+    # 【核心新增】向右滑动的方法
+    @allure.step("执行一次向右滑动")
+    def swipe_right(self, duration_ms=200):
+        """
+        从屏幕的左侧中心向右侧中心滑动，模拟向右滑动。
+        """
+        size = self._get_screen_size()
+        width = size['width']
+        height = size['height']
+
+        # Y轴保持在屏幕垂直中点
+        y = int(height * 0.45)
+        # X轴从左向右
+        start_x = int(width * 0.2)
+        end_x = int(width * 0.8)
+
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        actions = ActionBuilder(self.driver, mouse=finger)
+
+        actions.pointer_action.move_to_location(start_x, y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(duration_ms / 1000)
+        actions.pointer_action.move_to_location(end_x, y)
+        actions.pointer_action.release()
+        actions.perform()
+
     @allure.step("获取所有匹配元素的列表")
     def find_all_elements(self, locator):
         """
@@ -218,3 +270,95 @@ class Keywords:
         # 如果循环结束还没到底部，可以根据需要决定是报错还是警告
         pytest.fail(f"在尝试滚动 {max_swipes} 次后，页面仍未到达底部。")
         return None
+
+    # 在指定元素内部进行水平滑动
+    @allure.step("在元素 '{locator}' 内部向左滑动")
+    def swipe_element_horizontally(self, locator, direction: str = "left", duration_ms=200):
+        """
+        找到一个元素，并在其内部执行水平滑动。
+        :param duration_ms:
+        :param locator: 要滑动的元素。
+        :param direction: "left" 或 "right"。
+        """
+        # 1. 首先，找到这个元素
+        element = self.wait_for_element_to_be_visible(locator)
+
+        # 2. 获取元素的位置和大小
+        location = element.location
+        size = element.size
+
+        # 3. 【核心】基于元素自身的位置和大小，计算滑动的起止点
+        # Y坐标永远在元素的垂直中心
+        element_center_y = location['y'] + size['height'] // 2
+
+        if direction == "left":
+            # 从元素右侧 80% 处滑到左侧 20% 处
+            start_x = location['x'] + int(size['width'] * 0.8)
+            end_x = location['x'] + int(size['width'] * 0.2)
+        elif direction == "right":
+            # 从元素左侧 20% 处滑到右侧 80% 处
+            start_x = location['x'] + int(size['width'] * 0.2)
+            end_x = location['x'] + int(size['width'] * 0.8)
+        else:
+            raise ValueError("方向参数必须是 'left' 或 'right'")
+
+        # 4. 执行滑动
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        actions = ActionBuilder(self.driver, mouse=finger)
+        actions.pointer_action.move_to_location(start_x, element_center_y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(duration_ms / 1000)
+        actions.pointer_action.move_to_location(end_x, element_center_y)
+        actions.pointer_action.release()
+        actions.perform()
+
+    @allure.step("在元素 '{locator}' 内部向 '{direction}' 带弧度滑动")
+    def swipe_element_horizontally_with_arc(self, locator, direction: str = "left", duration_ms=400,
+                                            curve_offset=20):
+        """
+        找到一个元素，并在其内部执行一个带微小弧度的水平滑动，以模拟更真实的用户手势。
+        """
+        # 1. 找到元素并获取其几何信息
+        element = self.wait_for_element_to_be_visible(locator)
+        location = element.location
+        size = element.size
+
+        # 2. 计算弧线的三个关键点坐标
+        element_center_y = location['y'] + size['height'] // 2
+
+        if direction == "left":
+            start_x = location['x'] + int(size['width'] * 0.8)
+            end_x = location['x'] + int(size['width'] * 0.2)
+        elif direction == "right":
+            start_x = location['x'] + int(size['width'] * 0.2)
+            end_x = location['x'] + int(size['width'] * 0.8)
+        else:
+            raise ValueError("方向参数必须是 'left' 或 'right'")
+
+        mid_x = (start_x + end_x) // 2
+        mid_y_with_offset = element_center_y + curve_offset
+
+        # 3. 严格使用您成功的代码模式来构建和执行手势
+        finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        actions = ActionBuilder(self.driver, mouse=finger)
+
+        # 将总时长分配给两个滑动阶段
+        segment_duration_sec = (duration_ms / 2) / 1000
+
+        # 构建动作链
+        actions.pointer_action.move_to_location(start_x, element_center_y)
+        actions.pointer_action.pointer_down()
+        actions.pointer_action.pause(segment_duration_sec)  # 第一段滑动
+
+        actions.pointer_action.move_to_location(mid_x, mid_y_with_offset)  # 移动到弧线中点
+        actions.pointer_action.pause(segment_duration_sec)  # 第二段滑动
+
+        actions.pointer_action.move_to_location(end_x, element_center_y)  # 移动到终点
+        actions.pointer_action.release()
+
+        # 执行手势
+        actions.perform()
+
+        allure.attach(
+            f"执行带弧度滑动: 从 ({start_x}, {element_center_y}) -> 中点({mid_x}, {mid_y_with_offset}) -> 到 ({end_x}, {element_center_y})",
+            name="弧线滑动日志")

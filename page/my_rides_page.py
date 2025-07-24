@@ -62,3 +62,18 @@ class MyRidesPage(Keywords):
     @allure.step("点击最后一条骑行记录卡片")
     def click_last_ride_card(self):
         self.click_element(LAST_RIDE_CARD_ITEM)
+
+    @allure.step("向左滑动骑行图表")
+    def swipe_chart_left(self):
+        # 妈的要带弧度的水平滑动，不然图表不会动，太变态了。
+        self.swipe_element_horizontally_with_arc(RIDE_CHART, direction="left")
+
+    @allure.step("向右滑动骑行图表")
+    def swipe_chart_right(self):
+        # 先点击元素
+        # self.click_element(RIDE_CHART)
+        # 再进行滑动
+        # for i in range(3):
+        #     self.swipe_element_horizontally(RIDE_CHART, direction="right")
+        # 妈的要带弧度的水平滑动，不然图表不会动，太变态了。
+        self.swipe_element_horizontally_with_arc(RIDE_CHART, direction="right")
