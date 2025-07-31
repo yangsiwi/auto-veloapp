@@ -5,6 +5,10 @@
 - case_id: 'ride_share_002'
   test_type: 'swipe_left'
   case_name: '向左滑动分享卡片'
+- case_id: 'ride_share_003'
+  test_type: 'click_add_image'
+  case_name: '点击 Add image 按钮底部弹出弹窗'
+  expected_result: 'Take photo'
 
 #- case_id: 'ride_share_002'
 #  test_type: 'swipe_right'

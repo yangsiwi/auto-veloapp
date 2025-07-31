@@ -1,12 +1,7 @@
 import time
 import allure
 import pytest
-from locator.my_rides_locator import *
-from page.my_rides_page import MyRidesPage
-from page.ride_detail_page import RideDetailPage
-from page.ride_share_page import RideSharePage
 from utils.load_yaml import load_yaml
-from utils.navigation_helper import run_navigation_test
 
 
 @allure.epic("velotric app应用")
@@ -29,6 +24,8 @@ class TestShare:
             TestShare._run_scroll_to_left(rsp)
         elif test_type == 'click_share_btn':
             TestShare._run_click_share_btn(rsp, case)
+        elif test_type == 'click_add_image':
+            TestShare._run_click_add_image(rsp, case)
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
@@ -47,8 +44,23 @@ class TestShare:
         with allure.step(f"断言弹出页面是否有'更多'文案: {case['expected_result']}"):
             # 断言弹出页面是否有'更多'文案
             actual_msg = rsp.get_more_text()
-            assert actual_msg == case['expected_result'], "主页面状态断言失败"
+            assert actual_msg == case['expected_result'], "断言失败"
             # 断言后点击一次返回按钮
             rsp.press_back_key()
             # 强制等待 1 秒
             time.sleep(1)
+
+    @classmethod
+    def _run_click_add_image(cls, rsp, case):
+        """
+        处理点击 Add image 按钮后出现底部弹窗的测试流程
+        """
+        with allure.step(f"执行点击 Add image 按钮"):
+            rsp.click_add_image_btn()
+
+        with allure.step(f"断言弹出页面是否有Take photo文案: {case['expected_result']}"):
+            # 断言弹出页面是否有 'Take photo' 的文案
+            actual_msg = rsp.get_take_photo_btn_text()
+            assert actual_msg == case['expected_result'], "断言失败"
+            # 断言完后点击 'Cancel' 按钮
+            rsp.click_cancel_btn()
