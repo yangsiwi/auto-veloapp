@@ -20,9 +20,9 @@ class RideSharePage(Keywords):
     def click_share_btn(self):
         self.click_element(share_btn)
 
-    # @allure.step("向左滑动")
-    # def swipe_left(self):
-    #     self.swipe_element_horizontally(share_btn, 'left')
+    @allure.step("获取点击 Share 按钮后系统弹出的'更多'的文案")
+    def get_more_text(self):
+        return self.get_element_attribute(MORE_TEXT, 'text')
 
     @allure.step("向左滑动骑行记录卡片")
     def swipe_card_left(self):

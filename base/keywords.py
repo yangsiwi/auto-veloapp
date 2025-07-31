@@ -464,3 +464,12 @@ class Keywords:
         except Exception as e:
             print(f"执行缩放操作时出错: {str(e)}")
             raise
+
+        allure.step("点击系统返回键")
+
+    def press_back_key(self):
+        """
+        调用系统返回键（Back）
+        Android 使用 driver.back() 即可
+        """
+        self.driver.back()

@@ -1,4 +1,8 @@
 - case_id: 'ride_share_001'
+  test_type: 'click_share_btn'
+  case_name: '点击 Share 按钮弹出系统弹窗'
+  expected_result: '更多'
+- case_id: 'ride_share_002'
   test_type: 'swipe_left'
   case_name: '向左滑动分享卡片'
 

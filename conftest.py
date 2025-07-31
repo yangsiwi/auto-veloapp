@@ -19,9 +19,9 @@ from utils.load_yaml import load_yaml
 def get_driver_options():
     options = UiAutomator2Options()
     options.platform_name = "Android"
-    options.platform_version = "12"
-    # options.device_name = "R3CT90HL0QB"
-    options.device_name = "ZY22F2W79N"
+    options.platform_version = "14"
+    options.device_name = "R3CT90HL0QB"
+    # options.device_name = "ZY22F2W79N"
     options.automation_name = "UiAutomator2"
     options.app_package = "com.mddoscar.velotricbike"
     options.app_activity = "com.example.velotric_app.MainActivity"
