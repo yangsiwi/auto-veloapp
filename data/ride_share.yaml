@@ -9,6 +9,14 @@
   test_type: 'click_add_image'
   case_name: '点击 Add image 按钮底部弹出弹窗'
   expected_result: 'Take photo'
+- case_id: 'ride_share_004'
+  test_type: 'click_take_photo'
+  case_name: '点击 Take photo 拍照'
+- case_id: 'ride_share_005'
+  test_type: 'click_select_from_gallery'
+  case_name: '点击 Select from gallery 选择照片'
+
+
 
 #- case_id: 'ride_share_002'
 #  test_type: 'swipe_right'

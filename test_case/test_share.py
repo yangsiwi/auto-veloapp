@@ -26,6 +26,10 @@ class TestShare:
             TestShare._run_click_share_btn(rsp, case)
         elif test_type == 'click_add_image':
             TestShare._run_click_add_image(rsp, case)
+        elif test_type == 'click_take_photo':
+            TestShare._run_click_take_photo(rsp)
+        elif test_type == 'click_select_from_gallery':
+            TestShare._run_click_select_from_gallery(rsp)
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
@@ -64,3 +68,52 @@ class TestShare:
             assert actual_msg == case['expected_result'], "断言失败"
             # 断言完后点击 'Cancel' 按钮
             rsp.click_cancel_btn()
+
+    @classmethod
+    def _run_click_take_photo(cls, rsp):
+        """
+        处理点击 Take Photo 按钮
+        """
+        with allure.step(f"执行点击 Add image 按钮"):
+            rsp.click_add_image_btn()
+
+        with allure.step(f"执行点击 Take photo 按钮"):
+            rsp.click_take_photo()
+
+        with allure.step(f"执行点击系统相机的拍照按钮"):
+            rsp.click_camera_take_photo_btn()
+
+        with allure.step(f"执行点击系统相机的确认按钮"):
+            rsp.click_camera_confirm_btn()
+
+        with allure.step(f"执行点击 save 按钮"):
+            rsp.click_album_save_btn()
+
+        # 暂时不考虑该地方的断言，比较麻烦
+        time.sleep(1)
+
+    @classmethod
+    def _run_click_select_from_gallery(cls, rsp):
+        """
+        处理点击 Select from gallery 按钮
+        """
+        with allure.step(f"执行点击卡片让 Delete 按钮出现，并且点击"):
+            rsp.click_delete_btn()
+
+        with allure.step(f"执行点击 Add image 按钮"):
+            rsp.click_add_image_btn()
+
+        with allure.step(f"执行点击 Select from gallery 按钮"):
+            rsp.click_select_from_gallery()
+
+        with allure.step(f"选择相册中的第一张图片作为背景图"):
+            rsp.choice_first_photo()
+
+        with allure.step(f"点击 Confirm 按钮"):
+            rsp.click_camera_confirm_btn()
+
+        with allure.step(f"点击 Save 按钮"):
+            rsp.click_album_save_btn()
+
+        # 此处暂时不考虑做断言，比较麻烦
+        time.sleep(1)

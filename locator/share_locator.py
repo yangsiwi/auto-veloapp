@@ -30,5 +30,35 @@ TAKE_PHOTO_TEXT = (AppiumBy.XPATH, '//android.view.View[@content-desc="Take phot
 # Select from Gallery
 SELECT_FROM_GALLERY_TEXT = (AppiumBy.XPATH, '//android.view.View[@content-desc="Select from gallery"]')
 
-# cancel_btn
+# Cancel 按钮
 cancel_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Cancel"]')
+
+# Take Photo 按钮
+take_photo_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Take photo"]')
+
+# Select from Gallery 按钮
+select_from_gallery_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Select from gallery"]')
+
+# 系统相机的拍照按钮
+camera_take_photo_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="shooting button"]')
+
+# 拍照完之后的 Confirm 确定按钮 / 相册中的 Confirm 按钮
+confirm_btn = (AppiumBy.XPATH, '//android.widget.Button[@content-desc="Confirm"]')
+
+# 系统相册的图片
+# cancel 按钮
+album_cancel_btn = (AppiumBy.XPATH, '//android.widget.Button[@content-desc="cancel"]')
+# Rotate 按钮
+album_rotate_btn = (AppiumBy.XPATH, '//android.widget.Button[@content-desc="Rotate"]')
+# save 按钮
+album_save_btn = (AppiumBy.XPATH, '//android.widget.Button[@content-desc="save"]')
+
+
+# 第一张照片
+first_photo = (AppiumBy.XPATH, "(//android.widget.ImageView[starts-with(@content-desc, 'Image')])[1]")
+
+# 卡片
+card = (AppiumBy.XPATH, "(//android.view.View[contains(@content-desc, 'miles')])[2]/android.widget.ImageView[1]")
+
+# 删除按钮
+delete_btn = (AppiumBy.XPATH, '(//android.view.View[@content-desc="Delete"])[1]')
