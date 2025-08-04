@@ -5,11 +5,11 @@ from utils.load_yaml import load_yaml
 
 
 @allure.epic("velotric app应用")
-@allure.feature("分享骑行记录页面")
+@allure.story("分享骑行记录页面")
 class TestShare:
     data = load_yaml('./data/ride_share.yaml')
 
-    @pytest.mark.run(order=6)
+    @pytest.mark.run(order=8)
     @pytest.mark.parametrize("case", data, ids=[f"{case['case_name']}" for case in data])
     def test_ride_detail(self, ride_share_page_setup, case):
         allure.dynamic.title(case['case_name'])

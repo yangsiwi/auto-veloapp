@@ -6,7 +6,7 @@ from locator.login_locator import *
 
 
 @allure.epic("velotric app应用")
-@allure.feature("登录模块")
+@allure.story("登录模块")
 class TestLogin:
     # 读取测试数据
     test_data = load_yaml('./data/login.yaml')

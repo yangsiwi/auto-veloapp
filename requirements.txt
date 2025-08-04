@@ -7,8 +7,8 @@ Appium-Python-Client==5.1.1
 selenium==4.34.2
 
 # 报告工具
-allure-pytest==2.14.3
-allure-python-commons==2.14.3
+allure-pytest==2.15.0
+allure-python-commons==2.15.0
 allure-combine==1.0.11
 
 # 数据处理

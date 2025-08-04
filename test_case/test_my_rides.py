@@ -8,7 +8,7 @@ from utils.load_yaml import load_yaml
 from utils.navigation_helper import run_navigation_test
 
 @allure.epic("velotric app应用")
-@allure.feature("我的骑行记录模块")
+@allure.story("我的骑行记录模块")
 class TestMyRides:
     data = load_yaml('./data/my_rides.yaml')
 

@@ -10,7 +10,7 @@ from utils.navigation_helper import run_navigation_test
 
 
 @allure.epic("velotric app应用")
-@allure.feature("骑行记录详情")
+@allure.story("骑行记录详情")
 class TestRideDetail:
     data = load_yaml('./data/ride_detail.yaml')
 
@@ -25,7 +25,7 @@ class TestRideDetail:
         'RideSharePage': RideSharePage
     }
 
-    @pytest.mark.run(order=6)
+    @pytest.mark.run(order=7)
     @pytest.mark.parametrize("case", data, ids=[f"{case['case_name']}" for case in data])
     def test_ride_detail(self, ride_detail_page_setup, case):
         allure.dynamic.title(case['case_name'])
