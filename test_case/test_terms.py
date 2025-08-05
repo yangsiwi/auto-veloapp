@@ -35,9 +35,6 @@ class TestTerms:
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
-        # 退出到 about 页面
-        tp.click_back_btn()
-
     @classmethod
     def _run_scroll_to_bottom(cls, tp):
         tp.scroll_to_bottom()
@@ -45,3 +42,6 @@ class TestTerms:
     @classmethod
     def _run_scroll_to_top(cls, tp):
         tp.scroll_to_top()
+
+        # 退出到 about 页面
+        tp.click_back_btn()

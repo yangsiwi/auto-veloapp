@@ -36,9 +36,6 @@ class TestPrivacy:
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
-        # 退出到 about 页面
-        ppp.click_back_btn()
-
     @classmethod
     def _run_scroll_to_bottom(cls, ppp):
         ppp.scroll_to_bottom()
@@ -46,3 +43,6 @@ class TestPrivacy:
     @classmethod
     def _run_scroll_to_top(cls, ppp):
         ppp.scroll_to_top()
+
+        # 退出到 about 页面
+        ppp.click_back_btn()
