@@ -1,0 +1,8 @@
+- case_id: 'sync001'
+  case_name: '点击 Health Connect 进入到子页面'
+  test_type: 'navigation'
+  start_page_object_name: 'DataSyncPage'
+  page_object_name: 'HealthConnPage'
+  click_method: 'click_health_connect'
+  verify_method: 'get_sync_with_android_text'
+  expected_result: 'SYNCHRONIZE WITH ANDROID'

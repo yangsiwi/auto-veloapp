@@ -1,0 +1,5 @@
+- case_id: 'conn001'
+  case_name: '点击 Connect 按钮授权 Health Connect'
+  test_type: 'connect'
+  expected_result: 'Connected'
+  expected_auto_btn_status: 'true'

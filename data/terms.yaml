@@ -1,0 +1,8 @@
+- case_id: 'terms001'
+  case_name: '滚动使用条款到底部'
+  test_type: 'scroll_bottom'
+  need_enter_page: true
+- case_id: 'terms002'
+  case_name: '滚动使用条款到顶部'
+  test_type: 'scroll_top'
+  need_enter_page: false
