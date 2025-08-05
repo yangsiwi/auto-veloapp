@@ -12,3 +12,13 @@ class PrivacyPolicyPage(Keywords):
     @allure.step("获取使用条款页面顶部的 'PRIVACY POLICY' 文案")
     def get_privacy_policy_text(self):
         return self.get_element_attribute(PRIVACY_POLICY_TEXT, 'content-desc')
+
+    @allure.step("滚动到页面最底部")
+    def scroll_to_bottom(self):
+        for i in range(25):
+            self.swipe_up()
+
+    @allure.step("滚动到页面最顶部")
+    def scroll_to_top(self):
+        for i in range(25):
+            self.swipe_down()

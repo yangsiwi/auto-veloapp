@@ -1,0 +1,8 @@
+- case_id: 'privacy001'
+  case_name: '滚动隐私政策到底部'
+  test_type: 'scroll_bottom'
+  need_enter_page: true
+- case_id: 'privacy002'
+  case_name: '滚动隐私政策到顶部'
+  test_type: 'scroll_top'
+  need_enter_page: false

@@ -1,15 +1,16 @@
 import allure
 import pytest
-from page.terms_page import TermsOfUsePage
+
+from page.privacy_page import PrivacyPolicyPage
 from utils.load_yaml import load_yaml
 
 
 @allure.epic("velotric app应用")
-@allure.story("使用条款页面")
-class TestTerms:
-    data = load_yaml('./data/terms.yaml')
+@allure.story("隐私政策页面")
+class TestPrivacy:
+    data = load_yaml('./data/privacy.yaml')
 
-    @pytest.mark.run(order=11)
+    @pytest.mark.run(order=12)
     @pytest.mark.parametrize("case", data, ids=[f"{case['case_name']}" for case in data])
     def test_terms(self, about_page_setup, case):
         allure.dynamic.title(case['case_name'])
@@ -21,27 +22,27 @@ class TestTerms:
         need_enter = case.get('need_enter_page', True)  # 默认需要进入页面
 
         if need_enter:
-            # 进入到 Terms of Use 页面
-            ap.click_terms_of_use()
+            # 进入到隐私政策页面
+            ap.click_privacy_policy()
 
-        # 实例化 Terms of Use 页面实例
-        tp = TermsOfUsePage(driver)
+        # 实例化 Privacy Policy 页面实例
+        ppp = PrivacyPolicyPage(driver)
 
         # --- 核心调度逻辑 ---
         if test_type == 'scroll_bottom':
-            TestTerms._run_scroll_to_bottom(tp)
+            TestPrivacy._run_scroll_to_bottom(ppp)
         elif test_type == 'scroll_top':
-            TestTerms._run_scroll_to_top(tp)
+            TestPrivacy._run_scroll_to_top(ppp)
         else:
             pytest.fail(f"不支持的测试类型：{test_type}")
 
         # 退出到 about 页面
-        tp.click_back_btn()
+        ppp.click_back_btn()
 
     @classmethod
-    def _run_scroll_to_bottom(cls, tp):
-        tp.scroll_to_bottom()
+    def _run_scroll_to_bottom(cls, ppp):
+        ppp.scroll_to_bottom()
 
     @classmethod
-    def _run_scroll_to_top(cls, tp):
-        tp.scroll_to_top()
+    def _run_scroll_to_top(cls, ppp):
+        ppp.scroll_to_top()

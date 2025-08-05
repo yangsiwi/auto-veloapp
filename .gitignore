@@ -24,7 +24,6 @@ allure-report/
 *.html
 *.xml
 *.db
-*.log
 
 # Mac 系统文件
 .DS_Store
