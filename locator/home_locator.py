@@ -9,3 +9,8 @@ bike_settings_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="BIKE SE
 # 右上角个人信息图标
 userinfo_btn = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.ImageView").instance(1)')
 
+# 连接状态文案【已连接】
+connected_text = (AppiumBy.XPATH, '//android.view.View[@content-desc="Connected"]')
+
+# 连接状态文案【未连接】
+disconnected_text = (AppiumBy.XPATH, '//android.view.View[@content-desc="Disconnected"]')

@@ -2,8 +2,6 @@ import time
 import allure
 from base.keywords import Keywords
 from locator.bike_settings_locator import *
-from locator.home_locator import *
-from locator.login_locator import *
 
 # 车辆设置页
 class BikeSettingsPage(Keywords):

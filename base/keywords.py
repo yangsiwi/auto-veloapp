@@ -26,18 +26,23 @@ class Keywords:
 
     # --- 基础等待方法 ---
     @allure.step("等待元素出现")
-    def wait_for_element_to_be_visible(self, locator):
+    def wait_for_element_to_be_visible(self, locator, timeout=None):
         """
         等待元素在页面上可见。
+        :param locator: 元素定位器。
+        :param timeout: 可选的超时时间（秒），如果为None，则使用类中定义的默认超时。
         """
+        # 如果没有提供特定的超时时间，就使用类属性中定义的默认值
+        wait_timeout = timeout if timeout is not None else self.timeout
         try:
-            return WebDriverWait(self.driver, self.timeout, self.poll_frequency).until(
+            return WebDriverWait(self.driver, wait_timeout, self.poll_frequency).until(
                 ec.visibility_of_element_located(locator)
             )
         except TimeoutException:
-            allure.attach(self.driver.get_screenshot_as_png(), f"等待元素 {locator} 可见超时",
+            allure.attach(self.driver.get_screenshot_as_png(), f"等待元素 {locator} 可见超时 ({wait_timeout}秒)",
                           allure.attachment_type.PNG)
-            raise TimeoutException(f"等待元素 {locator} 可见超时")
+            # 抛出异常，让调用方知道等待失败
+            raise
 
     # 【新增】等待元素在页面上消失的方法
     @allure.step("等待元素消失")

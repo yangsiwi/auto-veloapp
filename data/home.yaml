@@ -1,15 +1,9 @@
-# 个人信息测试数据
-#userinfo_data:
-#  - case_id: 'home001'
-#    case_name: '点击个人信息按钮进入到个人信息页面'
-#    expected_result: 'Settings'
-#
-## 车辆设置测试数据
-#bike_settings_data:
-#  - case_id: 'home002'
-#    case_name: '点击车辆设置按钮进入到车辆设置页面'
-#    expected_result: 'BIKE SETTINGS'
-
+- case_id: 'home001'
+  case_name: '验证在60秒内连接上车辆蓝牙，蓝牙状态从"未连接"变为"已连接"'
+  test_type: 'connection_status'
+  verify_method: 'get_connection_status_text'
+  timeout: 60
+  expected_result: 'true1'
 - case_id: 'home001'
   case_name: '点击个人信息图标进入到子页面'
   test_type: 'navigation'
