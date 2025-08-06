@@ -3,6 +3,9 @@ import allure
 import pytest
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
+from selenium.common import TimeoutException
+
+from locator.home_locator import connected_text
 from locator.login_locator import sign_btn
 from locator.my_rides_locator import RIDE_CARD_ITEMS, FIRST_RIDE_CARD_ITEM
 from page.about_page import AboutPage
@@ -114,9 +117,28 @@ def bike_settings_page_setup(logged_in_driver):
     """
     一个专门为车辆设置页测试准备的fixture。
     它会确保测试开始时，App已经位于车辆设置页。
+    【新增】在进入页面前，会先检查蓝牙连接状态作为前置条件。
     """
-    print("\n[Module Setup for BikeSettings Test] : 导航到车辆设置页...")
+    print("\n[Module Setup for BikeSettings Test] : 准备进入车辆设置页...")
     hp = HomePage(logged_in_driver)
+
+    # --- 新增的前置条件检查逻辑 ---
+    with allure.step("前置条件检查：确认车辆蓝牙已连接"):
+        try:
+            # 给予一个合理的等待时间（例如30秒）来确认连接状态
+            # 这是一个检查，而不是一个完整的测试，所以超时可以短一些
+            hp.wait_for_element_to_be_visible(connected_text, timeout=30)
+            allure.attach("检查通过：车辆已连接。", name="蓝牙状态")
+            print("\n[Precondition Check] OK: 车辆已连接，可以继续测试车辆设置。")
+        except TimeoutException:
+            # 如果在15秒内找不到 "Connected" 元素，就直接让测试模块失败
+            error_msg = "前置条件失败：车辆未连接蓝牙（在30秒内未找到 'Connected' 状态）。车辆设置模块的所有测试将跳过。"
+            allure.attach(logged_in_driver.get_screenshot_as_png(), "蓝牙未连接截图", allure.attachment_type.PNG)
+            pytest.fail(error_msg)
+
+    # --- 原有的导航逻辑 ---
+    # 只有在蓝牙连接检查通过后，才会执行下面的代码
+    allure.step("导航操作：点击进入 BIKE SETTINGS 页面")
     hp.click_bike_settings()
 
     # 将 driver 和 BikeSettingsPage 实例一同传递给测试用例
@@ -124,7 +146,11 @@ def bike_settings_page_setup(logged_in_driver):
 
     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
     print("\n[Module Teardown for BikeSettings Test] : 从车辆设置页返回主页。")
-    BikeSettingsPage(logged_in_driver).click_back_btn()
+    # 使用 try-except 增加健壮性，防止因页面元素找不到导致 teardown 失败
+    try:
+        BikeSettingsPage(logged_in_driver).click_back_btn()
+    except Exception as e:
+        print(f"警告：在 Teardown 阶段返回主页失败: {e}")
 
 
 @pytest.fixture(scope='module')

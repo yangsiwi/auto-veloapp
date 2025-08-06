@@ -3,4 +3,4 @@
   test_type: 'change_bike_name'
   action_method: 'change_bike_name'
   verify_method: 'get_bike_name_text'
-  expected_result: '我的D2'
+  expected_result: '哈喽啊DDD2'
