@@ -1,11 +1,28 @@
 # 个人信息测试数据
-userinfo_data:
-  - case_id: 'home001'
-    case_name: '点击个人信息按钮进入到个人信息页面'
-    expected_result: 'Settings'
+#userinfo_data:
+#  - case_id: 'home001'
+#    case_name: '点击个人信息按钮进入到个人信息页面'
+#    expected_result: 'Settings'
+#
+## 车辆设置测试数据
+#bike_settings_data:
+#  - case_id: 'home002'
+#    case_name: '点击车辆设置按钮进入到车辆设置页面'
+#    expected_result: 'BIKE SETTINGS'
 
-# 车辆设置测试数据
-bike_settings_data:
-  - case_id: 'home002'
-    case_name: '点击车辆设置按钮进入到车辆设置页面'
-    expected_result: 'BIKE SETTINGS'
+- case_id: 'home001'
+  case_name: '点击个人信息图标进入到子页面'
+  test_type: 'navigation'
+  start_page_object_name: 'HomePage' # <--- 指明从哪个页面开始
+  page_object_name: 'InfoPage' # <--- 指明去到哪个页面
+  click_method: 'click_userinfo'
+  verify_method: 'get_settings_text'
+  expected_result: 'Settings'
+- case_id: 'home002'
+  case_name: '点击 BIKE SETTINGS 按钮进入到子页面'
+  test_type: 'navigation'
+  start_page_object_name: 'HomePage' # <--- 指明从哪个页面开始
+  page_object_name: 'BikeSettingsPage' # <--- 指明去到哪个页面
+  click_method: 'click_bike_settings'
+  verify_method: 'get_bike_settings_content_text'
+  expected_result: 'BIKE SETTINGS'

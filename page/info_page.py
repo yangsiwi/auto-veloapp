@@ -1,5 +1,6 @@
 import allure
 from base.keywords import Keywords
+from locator.bike_settings_locator import *
 from locator.info_locator import *
 
 
@@ -62,3 +63,7 @@ class InfoPage(Keywords):
     @allure.step("点击 App Version 按钮")
     def click_app_version(self):
         self.click_element(app_version_btn)
+
+    @allure.step("获取个人信息页的 'Settings' 文案")
+    def get_settings_text(self):
+        return self.get_element_attribute(SETTINGS_TEXT, 'content-desc')

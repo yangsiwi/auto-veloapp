@@ -47,6 +47,26 @@ def app_setup(request, get_driver_options):
     return driver  # 直接返回 driver
 
 
+# 为登录测试模块专用的、函数级别的 fixture
+@pytest.fixture(scope='function')
+def login_test_driver(request, get_driver_options):
+    print("\n[Function Setup for Login Test] : 启动独立的Driver...")
+    driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
+
+    # 等待app启动稳定
+    time.sleep(3)
+
+    try:
+        driver.find_element(*sign_btn).click()
+    except Exception as e:
+        pytest.fail(f"登录测试启动失败: 无法点击 'Sign in' 按钮。错误: {e}")
+
+    yield driver
+
+    print("\n[Function Teardown for Login Test] : 关闭独立的Driver。")
+    driver.quit()
+
+
 @pytest.fixture(scope='session')
 def logged_in_driver(app_setup):
     driver = app_setup
@@ -87,25 +107,23 @@ def logged_in_driver(app_setup):
 
     return driver
 
+# @pytest.fixture(scope='module')
+# def home_page_setup(logged_in_driver):
+#     """
+#     一个专门为车况页模块测试准备的 fixture。
+#     它会确保测试开始时，App已经位于车况页。
+#     """
+#     print("\n[Module Setup for Info Test] : 导航到车况页...")
+#     hp = HomePage(logged_in_driver)
+#     hp.click_userinfo()
+#
+#     # 将 driver 和 InfoPage 实例一同传递给测试用例
+#     yield logged_in_driver, InfoPage(logged_in_driver)
+#
+#     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+#     print("\n[Module Teardown for Info Test] : 从个人信息页返回主页。")
+#     InfoPage(logged_in_driver).click_back_btn()
 
-# 为登录测试模块专用的、函数级别的 fixture
-@pytest.fixture(scope='function')
-def login_test_driver(request, get_driver_options):
-    print("\n[Function Setup for Login Test] : 启动独立的Driver...")
-    driver = webdriver.Remote("http://127.0.0.1:4723", options=get_driver_options)
-
-    # 等待app启动稳定
-    time.sleep(3)
-
-    try:
-        driver.find_element(*sign_btn).click()
-    except Exception as e:
-        pytest.fail(f"登录测试启动失败: 无法点击 'Sign in' 按钮。错误: {e}")
-
-    yield driver
-
-    print("\n[Function Teardown for Login Test] : 关闭独立的Driver。")
-    driver.quit()
 
 
 @pytest.fixture(scope='module')
@@ -172,7 +190,6 @@ def my_rides_page_setup(logged_in_driver):
 
 @pytest.fixture(scope='module')
 def ride_detail_page_setup(logged_in_driver):
-
     """
     一个专门为 “骑行详情页” 测试准备的 fixture。
     它会确保测试开始时，App已经位于 “骑行详情” 页面。
@@ -196,9 +213,9 @@ def ride_detail_page_setup(logged_in_driver):
     MyRidesPage(logged_in_driver).click_back_btn()
     InfoPage(logged_in_driver).click_back_btn()
 
+
 @pytest.fixture(scope='module')
 def ride_share_page_setup(logged_in_driver):
-
     """
     一个专门为 “分享骑行页” 测试准备的 fixture。
     它会确保测试开始时，App已经位于 “分享骑行页” 页面。

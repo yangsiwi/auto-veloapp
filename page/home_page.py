@@ -20,10 +20,10 @@ class HomePage(Keywords):
     def click_bike_settings(self):
         self.click_element(bike_settings_btn)
 
-    @allure.step("获取骑行记录页面的 'Settings' 文案")
-    def get_settings_text(self):
-        return self.get_element_attribute(SETTINGS_TEXT, 'content-desc')
+    # @allure.step("获取骑行记录页面的 'Settings' 文案")
+    # def get_settings_text(self):
+    #     return self.get_element_attribute(SETTINGS_TEXT, 'content-desc')
 
-    @allure.step("获取车辆设置页面顶部的 'BIKE SETTINGS' 文案")
-    def get_bike_settings_content_text(self):
-        return self.get_element_attribute(BIKE_SETTINGS_TEXT, 'content-desc')
+    # @allure.step("获取车辆设置页面顶部的 'BIKE SETTINGS' 文案")
+    # def get_bike_settings_content_text(self):
+    #     return self.get_element_attribute(BIKE_SETTINGS_TEXT, 'content-desc')
