@@ -1,10 +1,10 @@
-- case_id: 'home001'
+- case_id: 'home_001'
   case_name: '验证在60秒内连接上车辆蓝牙，蓝牙状态从"未连接"变为"已连接"'
   test_type: 'connection_status'
   verify_method: 'get_connection_status_text'
   timeout: 60
   expected_result: 'true'
-- case_id: 'home001'
+- case_id: 'home_002'
   case_name: '点击个人信息图标进入到子页面'
   test_type: 'navigation'
   start_page_object_name: 'HomePage' # <--- 指明从哪个页面开始
@@ -12,7 +12,7 @@
   click_method: 'click_userinfo'
   verify_method: 'get_settings_text'
   expected_result: 'Settings'
-- case_id: 'home002'
+- case_id: 'home_003'
   case_name: '点击 BIKE SETTINGS 按钮进入到子页面'
   test_type: 'navigation'
   start_page_object_name: 'HomePage' # <--- 指明从哪个页面开始

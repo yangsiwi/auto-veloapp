@@ -6,6 +6,7 @@ from appium.options.android import UiAutomator2Options
 from locator.login_locator import sign_btn
 from locator.my_rides_locator import RIDE_CARD_ITEMS, FIRST_RIDE_CARD_ITEM
 from page.about_page import AboutPage
+from page.bike_settings_page import BikeSettingsPage
 from page.home_page import HomePage
 from page.info_page import InfoPage
 from page.login_page import LoginPage
@@ -107,23 +108,23 @@ def logged_in_driver(app_setup):
 
     return driver
 
-# @pytest.fixture(scope='module')
-# def home_page_setup(logged_in_driver):
-#     """
-#     一个专门为车况页模块测试准备的 fixture。
-#     它会确保测试开始时，App已经位于车况页。
-#     """
-#     print("\n[Module Setup for Info Test] : 导航到车况页...")
-#     hp = HomePage(logged_in_driver)
-#     hp.click_userinfo()
-#
-#     # 将 driver 和 InfoPage 实例一同传递给测试用例
-#     yield logged_in_driver, InfoPage(logged_in_driver)
-#
-#     # teardown: 在模块所有用例结束后，点击一次返回，回到主页
-#     print("\n[Module Teardown for Info Test] : 从个人信息页返回主页。")
-#     InfoPage(logged_in_driver).click_back_btn()
 
+@pytest.fixture(scope='module')
+def bike_settings_page_setup(logged_in_driver):
+    """
+    一个专门为车辆设置页测试准备的fixture。
+    它会确保测试开始时，App已经位于车辆设置页。
+    """
+    print("\n[Module Setup for BikeSettings Test] : 导航到车辆设置页...")
+    hp = HomePage(logged_in_driver)
+    hp.click_bike_settings()
+
+    # 将 driver 和 BikeSettingsPage 实例一同传递给测试用例
+    yield logged_in_driver, BikeSettingsPage(logged_in_driver)
+
+    # teardown: 在模块所有用例结束后，点击一次返回，回到主页
+    print("\n[Module Teardown for BikeSettings Test] : 从车辆设置页返回主页。")
+    BikeSettingsPage(logged_in_driver).click_back_btn()
 
 
 @pytest.fixture(scope='module')

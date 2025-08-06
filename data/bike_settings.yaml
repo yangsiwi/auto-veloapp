@@ -1,0 +1,6 @@
+- case_id: 'bike_settings_001'
+  case_name: '验证更改车辆名称'
+  test_type: 'change_bike_name'
+  action_method: 'change_bike_name'
+  verify_method: 'get_bike_name_text'
+  expected_result: '我的D2'
