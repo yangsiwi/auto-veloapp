@@ -3,7 +3,7 @@
   test_type: 'connection_status'
   verify_method: 'get_connection_status_text'
   timeout: 60
-  expected_result: 'true1'
+  expected_result: 'true'
 - case_id: 'home001'
   case_name: '点击个人信息图标进入到子页面'
   test_type: 'navigation'
