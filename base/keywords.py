@@ -2,7 +2,7 @@ import time
 
 import allure
 import pytest
-from selenium.common import TimeoutException
+from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
@@ -133,55 +133,70 @@ class Keywords:
         return self.driver.get_window_size()
 
     @allure.step("执行一次向上滑动")
-    def swipe_up(self, duration_ms=0):
+    def swipe_up(self, duration_ms=0, start_y_percent=0.8, end_y_percent=0.2):
+        """
+        执行一次向上滑动。
+        可以自定义滑动的起始和结束位置的Y轴百分比。
+
+        :param duration_ms: 滑动持续时间（毫秒）。
+        :param start_y_percent: 滑动起始点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
+        :param end_y_percent: 滑动结束点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
+        """
         size = self._get_screen_size()
         width = size['width']
-        height = size['height']
+        height = size['height'] # 800
 
+        # X轴保持在屏幕中央
         start_x = width // 2
-        start_y = int(height * 0.8)
-        end_y = int(height * 0.2)
 
-        # ✅ 创建 PointerInput（用 'touch' 不是 'finger'）
+        # 根据传入的百分比计算Y轴的起始和结束坐标
+        start_y = int(height * start_y_percent) # 800 * 0.6 = 480
+        end_y = int(height * end_y_percent) # 800 * 0.5 = 400
+
+        # 增加日志，方便调试
+        allure.attach(f"执行向上滑动: 从 ({start_x}, {start_y}) 到 ({start_x}, {end_y})", name="滑动坐标")
+
+        # 创建和执行滑动的逻辑保持不变
         finger = PointerInput(interaction.POINTER_TOUCH, "finger")
-
-        # ✅ 正确方式：创建 ActionBuilder 并传入 pointer_inputs
         actions = ActionBuilder(self.driver, mouse=finger)
 
-        # ✅ 构建动作链
         actions.pointer_action.move_to_location(start_x, start_y)
         actions.pointer_action.pointer_down()
         actions.pointer_action.pause(duration_ms / 1000)
         actions.pointer_action.move_to_location(start_x, end_y)
         actions.pointer_action.release()
 
-        # ✅ 执行滑动
         actions.perform()
 
     @allure.step("执行一次向下滑动")
-    def swipe_down(self, duration_ms=0):
+    def swipe_down(self, duration_ms=200, start_y_percent=0.2, end_y_percent=0.8):
+        """
+        执行一次向下滑动。
+        同样可以自定义滑动的起始和结束位置的Y轴百分比。
+
+        :param duration_ms: 滑动持续时间（毫秒）。
+        :param start_y_percent: 滑动起始点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
+        :param end_y_percent: 滑动结束点的Y轴位置（占屏幕高度的百分比, 0.0到1.0）。
+        """
         size = self._get_screen_size()
         width = size['width']
         height = size['height']
 
         start_x = width // 2
-        start_y = int(height * 0.2)  # 从页面上方开始
-        end_y = int(height * 0.8)  # 滑到页面下方
+        start_y = int(height * start_y_percent)
+        end_y = int(height * end_y_percent)
 
-        # 创建 PointerInput（仍然是 touch 类型）
+        allure.attach(f"执行向下滑动: 从 ({start_x}, {start_y}) 到 ({start_x}, {end_y})", name="滑动坐标")
+
         finger = PointerInput(interaction.POINTER_TOUCH, "finger")
-
-        # 创建 ActionBuilder
         actions = ActionBuilder(self.driver, mouse=finger)
 
-        # 构建动作链（从上往下滑）
         actions.pointer_action.move_to_location(start_x, start_y)
         actions.pointer_action.pointer_down()
         actions.pointer_action.pause(duration_ms / 1000)
         actions.pointer_action.move_to_location(start_x, end_y)
         actions.pointer_action.release()
 
-        # 执行动作
         actions.perform()
 
     # 【核心新增】向左滑动的方法
@@ -478,3 +493,44 @@ class Keywords:
         Android 使用 driver.back() 即可
         """
         self.driver.back()
+
+    @allure.step("滚动页面直到找到元素: '{locator}'")
+    def scroll_to_find_element(self, locator, max_swipes=10):
+        """
+        一个智能方法，用于在可滚动的页面上查找元素。
+        它会循环尝试：查找 -> 找不到 -> 向上滑动。
+
+        :param locator: 要查找的元素定位器。
+        :param max_swipes: 最多尝试滑动的次数，防止无限循环。
+        :return: 返回找到的 WebElement 对象。
+        :raises: 如果滑动了 max_swipes 次后仍未找到元素，则抛出 NoSuchElementException。
+        """
+        # 先记录一下滑动前的页面源码，用于判断是否滑到了页面底部
+        page_source_before_swipe = self.driver.page_source
+
+        for i in range(max_swipes):
+            try:
+                # 尝试直接查找元素，不使用长时间等待
+                element = self.driver.find_element(*locator)
+                # 如果找到了，就用 allure 记录一下，并返回该元素
+                allure.attach(f"在第 {i + 1} 次尝试时成功找到元素。", name="查找成功")
+                return element
+            except NoSuchElementException:
+                # 如果没找到，这是预料之中的，我们准备开始滑动
+                allure.attach(f"第 {i + 1} 次尝试未找到元素，执行一次向上滑动...", name="滚动日志")
+                self.swipe_up(start_y_percent=0.6, end_y_percent=0.4)  # 调用已有的向上滑动方法
+
+                # 【重要】检查是否已经滑到了页面底部
+                page_source_after_swipe = self.driver.page_source
+                if page_source_after_swipe == page_source_before_swipe:
+                    allure.attach("页面源码未变，已到达底部但未找到元素。", name="查找失败")
+                    raise NoSuchElementException(f"已滑动到页面底部，但仍然找不到元素: {locator}")
+
+                # 更新页面源码，为下一次比较做准备
+                page_source_before_swipe = page_source_after_swipe
+
+        # 如果循环了 max_swipes 次还没找到，就说明真的找不到了，抛出异常
+        error_msg = f"在滑动了 {max_swipes} 次后，仍未找到元素: {locator}"
+        allure.attach(self.driver.get_screenshot_as_png(), "滚动查找失败截图", allure.attachment_type.PNG)
+        raise NoSuchElementException(error_msg)
+

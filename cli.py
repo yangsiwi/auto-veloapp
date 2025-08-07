@@ -151,4 +151,32 @@ python cli.py -k userinfo
 python cli.py -m smoke
 
 python cli.py --path test_case/test_login.py test_case/test_home.py
+
+
+yaml测试用例数据
+# ...
+- case_id: 'bike_settings_005'
+  case_name: '切换_Screen_Brightness_为1档亮度' # 使用下划线
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_1'
+- case_id: 'bike_settings_006'
+  case_name: '切换_Screen_Brightness_为2档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_2'
+# ... 以此类推 ...
+
+- case_id: 'bike_settings_011'
+  case_name: '向上_滑动页面'
+  test_type: 'scroll_up'
+  start_y_percent: 0.6
+  end_y_percent: 0.4
+
+# 执行所有亮度相关的测试
+python cli.py --path test_case/test_bike_settings.py -k "Screen_Brightness"
+
+# 执行滑动相关的测试
+python cli.py --path test_case/test_bike_settings.py -k "滑动页面"
+
+# 同时执行两者
+python cli.py --path test_case/test_bike_settings.py -k "Screen_Brightness or 滑动页面"
 """

@@ -37,3 +37,51 @@ screen_brightness_btn_3 = (AppiumBy.XPATH, '//android.view.View[@content-desc="3
 screen_brightness_btn_4 = (AppiumBy.XPATH, '//android.view.View[@content-desc="4"]')
 screen_brightness_btn_5 = (AppiumBy.XPATH, '//android.view.View[@content-desc="5"]')
 screen_brightness_btn_auto = (AppiumBy.XPATH, '//android.view.View[@content-desc="Auto"]')
+
+# Speed Limit
+pedal_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.view.View[10]')
+throttle_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.view.View[15]')
+
+# --------------
+# Auto Power Off
+# --------------
+auto_power_off_off_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="OFF"]')
+auto_power_off_5_btn = (AppiumBy.XPATH, '(//android.view.View[@content-desc="5"])[2]')
+auto_power_off_10_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="10"]')
+auto_power_off_30_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="30"]')
+auto_power_off_60_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="60"]')
+
+# ----------
+# Auto Light
+# ----------
+auto_light_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.widget.Switch[1]')
+
+# --------------
+# Cruise Control
+# --------------
+cruise_control_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.widget.Switch[1]')
+
+# ----------------
+# Throttle Limit
+#  - Torque Mode
+#  - Cadence Mode
+# ----------------
+torque_mode_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.widget.Switch[2]')
+cadence_mode_btn = (AppiumBy.XPATH, '//android.widget.ScrollView/android.widget.Switch[3]')
+
+# ----------------
+# SensorSwap
+#  - Torque
+#  - Cadence
+# ----------------
+torque_sensor_swap_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Torque"]')
+cadence_sensor_swap_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Cadence"]')
+
+# ----------------
+# Set Unit
+#  - Mile
+#  - Km
+# ----------------
+mile_unit_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Mile"]')
+km_unit_btn = (AppiumBy.XPATH, '//android.view.View[@content-desc="Km"]')
+

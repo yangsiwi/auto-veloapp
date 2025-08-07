@@ -4,6 +4,7 @@
   action_method: 'change_bike_name'
   verify_method: 'get_bike_name_text'
   expected_result: '哈喽啊DDD2'
+# 这里需要注意：运行切换 riding mode 的模式用例的初始状态不能是默认的 Eco 模式，否则切换模式会失败
 - case_id: 'bike_settings_002'
   case_name: '点击 Eco 模式并验证'
   test_type: 'change_riding_mode'
@@ -22,3 +23,170 @@
   action_method: 'click_boost_mode'
   verify_method: 'get_boost_mode_text'
   expected_result: 'Boost Mode'
+# 因 App 的问题目前无法进行断言，所以断言部分暂时忽略，后续考虑使用图像识别库来做断言。
+- case_id: 'bike_settings_005'
+  case_name: '切换Screen_Brightness为1档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_1'
+- case_id: 'bike_settings_006'
+  case_name: '切换Screen_Brightness为2档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_2'
+- case_id: 'bike_settings_007'
+  case_name: '切换Screen_Brightness为3档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_3'
+- case_id: 'bike_settings_008'
+  case_name: '切换Screen_Brightness为4档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_4'
+- case_id: 'bike_settings_009'
+  case_name: '切换Screen_Brightness为5档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_5'
+- case_id: 'bike_settings_010'
+  case_name: '切换Screen_Brightness为Auto档亮度'
+  test_type: 'change_screen_brightness'
+  action_method: 'click_screen_brightness_auto'
+# 因为到三星手机底部了，所以得增加一个往下滑动一小段的测试用用例类型
+- case_id: 'bike_settings_011'
+  case_name: '向上滑动页面'
+  test_type: 'scroll_up'
+  start_y_percent: 0.6
+  end_y_percent: 0.4
+# Speed Limit(MPH) 因为 App 元素属性的原因，也暂时不做断言。
+# 【说明】Speed Limit 先跳过，这个部分非常难做自动化，后续有空再研究
+#- case_id: 'bike_settings_012'
+#  case_name: '滑动_Pedal_限速值到最大(28)'
+#  test_type: 'swipe_speed_limit'
+#  action_params:
+#    target: 'pedal'      # <--- 要操作的目标
+#    direction: 'right'   # <--- 滑动方向 (right 代表滑到最大值)
+#- case_id: 'bike_settings_013'
+#  case_name: '滑动_Pedal_限速值到最小(12)'
+#  test_type: 'swipe_speed_limit'
+#  action_params:
+#    target: 'pedal'
+#    direction: 'left'    # <--- left 代表滑到最小值
+#- case_id: 'bike_settings_014'
+#  case_name: '滑动_Throttle_限速值到最大(28)'
+#  test_type: 'swipe_speed_limit'
+#  action_params:
+#    target: 'throttle'
+#    direction: 'right'
+#- case_id: 'bike_settings_015'
+#  case_name: '滑动_Throttle_限速值到最小(12)'
+#  test_type: 'swipe_speed_limit'
+#  action_params:
+#    target: 'throttle'
+#    direction: 'left'
+# -----------------------
+# Auto Power Off(Minutes)
+# -----------------------
+- case_id: 'bike_settings_016'
+  case_name: '切换Auto Power Off档位-OFF'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_off'
+- case_id: 'bike_settings_017'
+  case_name: '切换Auto Power Off档位-5'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_5'
+- case_id: 'bike_settings_018'
+  case_name: '切换Auto Power Off档位-10'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_10'
+- case_id: 'bike_settings_019'
+  case_name: '切换Auto Power Off档位-30'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_30'
+- case_id: 'bike_settings_020'
+  case_name: '切换Auto Power Off档位-60'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_60'
+- case_id: 'bike_settings_021'
+  case_name: '切换Auto Power Off档位-OFF'
+  test_type: 'change_auto_power_off'
+  action_method: 'click_auto_power_off_off'
+
+- case_id: 'bike_settings_022'
+  case_name: '向上滑动页面'
+  test_type: 'scroll_up'
+  start_y_percent: 0.6
+  end_y_percent: 0.4
+
+# -----------
+# Auto Light
+# -----------
+- case_id: 'bike_settings_023'
+  case_name: '切换Auto Light开关'
+  test_type: 'change_auto_light'
+  action_method: 'click_auto_light'
+- case_id: 'bike_settings_024'
+  case_name: '切换Auto Light开关'
+  test_type: 'change_auto_light'
+  action_method: 'click_auto_light'
+
+- case_id: 'bike_settings_025'
+  case_name: '向上滑动页面'
+  test_type: 'scroll_up'
+  start_y_percent: 0.6
+  end_y_percent: 0.4
+
+# --------------
+# Cruise Control
+# --------------
+- case_id: 'bike_settings_026'
+  case_name: '切换Cruise Control开关'
+  test_type: 'change_cruise_control'
+  action_method: 'click_cruise_control'
+- case_id: 'bike_settings_027'
+  case_name: '切换Cruise Control开关'
+  test_type: 'change_cruise_control'
+  action_method: 'click_cruise_control'
+
+# -----------------
+# Throttle Limit
+#  - Torque Mode
+#  - Cadence Mode
+# -----------------
+- case_id: 'bike_settings_028'
+  case_name: '切换Torque Mode开关'
+  test_type: 'change_torque_mode'
+  action_method: 'click_torque_mode'
+- case_id: 'bike_settings_029'
+  case_name: '切换Torque Mode开关'
+  test_type: 'change_torque_mode'
+  action_method: 'click_torque_mode'
+- case_id: 'bike_settings_030'
+  case_name: '切换Cadence Mode开关'
+  test_type: 'change_cadence_mode'
+  action_method: 'click_cadence_mode'
+- case_id: 'bike_settings_031'
+  case_name: '切换Cadence Mode开关'
+  test_type: 'change_cadence_mode'
+  action_method: 'click_cadence_mode'
+
+# --------------
+# SensorSwap
+# --------------
+- case_id: 'bike_settings_032'
+  case_name: '点击Torque按钮'
+  test_type: 'click_torque'
+  action_method: 'click_torque_btn'
+- case_id: 'bike_settings_033'
+  case_name: '点击Cadence按钮'
+  test_type: 'click_cadence'
+  action_method: 'click_cadence_btn'
+
+# -------------
+# Set Unit
+# -------------
+- case_id: 'bike_settings_034'
+  case_name: '点击Mile按钮'
+  test_type: 'click_mile'
+  action_method: 'click_mile_btn'
+- case_id: 'bike_settings_035'
+  case_name: '点击Km按钮'
+  test_type: 'click_km'
+  action_method: 'click_km_btn'
+
