@@ -3,10 +3,8 @@ import time
 import allure
 import pytest
 from selenium.common import TimeoutException, NoSuchElementException
-from selenium.webdriver.common.actions import interaction
 from selenium.webdriver.common.actions.action_builder import ActionBuilder
 from selenium.webdriver.common.actions.interaction import POINTER_TOUCH
-from selenium.webdriver.common.actions.pointer_input import PointerInput
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 # 【核心】我们只需要这两个底层模块
@@ -44,7 +42,7 @@ class Keywords:
             # 抛出异常，让调用方知道等待失败
             raise
 
-    # 【新增】等待元素在页面上消失的方法
+    # 等待元素在页面上消失的方法
     @allure.step("等待元素消失")
     def wait_for_element_to_be_invisible(self, locator, timeout=10):
         """
@@ -79,10 +77,10 @@ class Keywords:
             raise TimeoutException(f"等待元素 {locator} 可点击超时")
 
     # 显示等待元素 place (xx.id, 'xx')
-    @allure.step("显示等待元素")
-    def wait_explicit(self, place):
-        ele = WebDriverWait(self.driver, 30).until(lambda x: x.find_element(*place))
-        return ele
+    # @allure.step("显示等待元素")
+    # def wait_explicit(self, place):
+    #     ele = WebDriverWait(self.driver, 30).until(lambda x: x.find_element(*place))
+    #     return ele
 
     # --- 核心操作方法 ---
     @allure.step("点击元素")
@@ -127,49 +125,63 @@ class Keywords:
             self.driver.hide_keyboard()
 
     # --- 页面滚动方法 ---
-
     def _get_screen_size(self):
         """内部辅助方法，获取屏幕尺寸。"""
         return self.driver.get_window_size()
 
     @allure.step("执行一次向上滑动")
-    def swipe_up(self, duration_ms=0, start_y_percent=0.8, end_y_percent=0.2):
+    def swipe_up(self, duration_ms=0, start_y_percent=0.8, end_y_percent=0.2, with_inertia=True):
         """
-        执行一次向上滑动。
-        可以自定义滑动的起始和结束位置的Y轴百分比。
-
+        该方法为执行一次向上滑动。
         :param duration_ms: 滑动持续时间（毫秒）。
         :param start_y_percent: 滑动起始点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
         :param end_y_percent: 滑动结束点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
+        :param with_inertia: 布尔值。True表示快速滑动（可能有惯性），False表示慢速拖动（无惯性）。
         """
+        # 获取屏幕尺寸
         size = self._get_screen_size()
+        # 宽度和高度
         width = size['width']
-        height = size['height'] # 800
+        height = size['height']
 
         # X轴保持在屏幕中央
         start_x = width // 2
 
         # 根据传入的百分比计算Y轴的起始和结束坐标
-        start_y = int(height * start_y_percent) # 800 * 0.6 = 480
-        end_y = int(height * end_y_percent) # 800 * 0.5 = 400
+        start_y = int(height * start_y_percent)
+        end_y = int(height * end_y_percent)
 
         # 增加日志，方便调试
         allure.attach(f"执行向上滑动: 从 ({start_x}, {start_y}) 到 ({start_x}, {end_y})", name="滑动坐标")
 
         # 创建和执行滑动的逻辑保持不变
+        # 创建一个指针输入对象，设备类型为触摸屏手指
         finger = PointerInput(interaction.POINTER_TOUCH, "finger")
+        # 创建一个动作构建器对象，用来组织和执行一系列输入动作
         actions = ActionBuilder(self.driver, mouse=finger)
 
+        # 移动到起始点并按下
         actions.pointer_action.move_to_location(start_x, start_y)
         actions.pointer_action.pointer_down()
-        actions.pointer_action.pause(duration_ms / 1000)
-        actions.pointer_action.move_to_location(start_x, end_y)
-        actions.pointer_action.release()
+        if with_inertia:
+            # 有惯性模式：模拟快速滑动
+            # 我们在一个很短的时间内完成移动，然后立刻释放
+            # duration_ms 决定了滑动的速度，越小越快，越容易产生惯性
+            actions.pointer_action.pause(duration_ms / 1000)
+            actions.pointer_action.move_to_location(start_x, end_y)
+            actions.pointer_action.release()
+        else:
+            # 无惯性模式：模拟慢速拖动
+            # 我们先移动到终点，然后在终点暂停一下，再释放
+            # actions.pointer_action.pause(duration_ms / 1000)
+            actions.pointer_action.move_to_location(start_x, end_y)
+            actions.pointer_action.pause(1)
+            actions.pointer_action.release()
 
         actions.perform()
 
     @allure.step("执行一次向下滑动")
-    def swipe_down(self, duration_ms=200, start_y_percent=0.2, end_y_percent=0.8):
+    def swipe_down(self, duration_ms=0, start_y_percent=0.2, end_y_percent=0.8, with_inertia=True):
         """
         执行一次向下滑动。
         同样可以自定义滑动的起始和结束位置的Y轴百分比。
@@ -177,6 +189,7 @@ class Keywords:
         :param duration_ms: 滑动持续时间（毫秒）。
         :param start_y_percent: 滑动起始点的Y轴位置（占屏幕高度的百分比，0.0到1.0）。
         :param end_y_percent: 滑动结束点的Y轴位置（占屏幕高度的百分比, 0.0到1.0）。
+        :param with_inertia: 布尔值。True表示快速滑动（可能有惯性），False表示慢速拖动（无惯性）。
         """
         size = self._get_screen_size()
         width = size['width']
@@ -191,11 +204,17 @@ class Keywords:
         finger = PointerInput(interaction.POINTER_TOUCH, "finger")
         actions = ActionBuilder(self.driver, mouse=finger)
 
+        # 移动到起始点并按下
         actions.pointer_action.move_to_location(start_x, start_y)
         actions.pointer_action.pointer_down()
-        actions.pointer_action.pause(duration_ms / 1000)
-        actions.pointer_action.move_to_location(start_x, end_y)
-        actions.pointer_action.release()
+        if with_inertia:
+            actions.pointer_action.pause(duration_ms / 1000)
+            actions.pointer_action.move_to_location(start_x, end_y)
+            actions.pointer_action.release()
+        else:
+            actions.pointer_action.move_to_location(start_x, end_y)
+            actions.pointer_action.pause(1)
+            actions.pointer_action.release()
 
         actions.perform()
 
@@ -391,7 +410,7 @@ class Keywords:
         """
         在指定元素上执行双指缩放操作（捏合或放大）
         :param locator: 元素定位器
-        :param direction: 'out'缩小/'in'放大
+        :param direction: 'out' 缩小 / 'in' 放大
         :param percent: 移动距离比例(0-1)
         :param duration_ms: 动作持续时间(毫秒)
         """
@@ -425,7 +444,7 @@ class Keywords:
                 f1_end = (center_x - offset_x, start_y_offset + notify_bar_offset)
                 f2_end = (center_x + offset_x, map_height - start_y_offset + notify_bar_offset)
             else:
-                raise ValueError("direction参数必须是'in'或'out'")
+                raise ValueError("direction参数必须是 'in' 或 'out'")
 
             # 4. 验证坐标是否在地图区域范围内
             if (f1_start[0] < 0 or f1_start[1] < notify_bar_offset or f2_start[0] < 0 or f2_start[
@@ -533,4 +552,3 @@ class Keywords:
         error_msg = f"在滑动了 {max_swipes} 次后，仍未找到元素: {locator}"
         allure.attach(self.driver.get_screenshot_as_png(), "滚动查找失败截图", allure.attachment_type.PNG)
         raise NoSuchElementException(error_msg)
-

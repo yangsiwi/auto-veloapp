@@ -17,9 +17,9 @@ class TermsOfUsePage(Keywords):
     @allure.step("滚动到页面最底部")
     def scroll_to_bottom(self):
         for i in range(20):
-            self.swipe_up()
+            self.swipe_up(with_inertia=True)
 
     @allure.step("滚动到页面最顶部")
     def scroll_to_top(self):
         for i in range(20):
-            self.swipe_down()
+            self.swipe_down(with_inertia=True)
